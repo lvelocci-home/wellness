@@ -167,11 +167,16 @@ details.have summary::-webkit-details-marker{display:none}
 .day{margin-bottom:10px}
 .day .dh{display:flex;align-items:center;gap:10px;padding:10px 2px}
 .day .dh b{flex:1;font-size:15px;font-weight:700}
-.ex{display:flex;align-items:baseline;gap:8px;padding:7px 4px 7px 14px;font-size:14px;border-bottom:1px solid var(--line)}
+.ex{display:flex;flex-wrap:wrap;align-items:center;gap:8px;padding:7px 4px 7px 14px;font-size:14px;border-bottom:1px solid var(--line)}
 .ex:last-child{border-bottom:none}
 .ex a{color:var(--ink);text-decoration:none;font-weight:600;border-bottom:1px dotted var(--line2)}
 .ex a:hover{color:var(--accent-d)}
 .ex .sr{margin-left:auto;font-size:12px;color:var(--ink2);font-weight:600;white-space:nowrap}
+.ex .set-boxes{display:inline-flex;gap:5px;flex:none}
+.set-box{width:20px;height:20px;border:1.5px solid var(--line2);border-radius:5px;cursor:pointer;background:var(--card);display:inline-flex;align-items:center;justify-content:center;transition:.1s}
+.set-box:hover{border-color:var(--accent)}
+.set-box.on{background:var(--accent);border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent-d)}
+.set-box.on::after{content:'✓';color:#fff;font-weight:800;font-size:12px;line-height:1}
 .rest{padding:14px;text-align:center;color:var(--ink3);font-style:italic;font-size:13px}
 .act{display:flex;align-items:center;gap:10px;padding:10px 2px;border-bottom:1px solid var(--line)}
 .act:last-child{border-bottom:none}
@@ -4714,7 +4719,7 @@ function defaultState(){
     // personal (local-only)
     foodLog:{}, trainingLog:{}, checkins:[], activities:[], strava:{workerUrl:"",token:"",lastSync:0},
     cloud:{url:"",token:"",lastSync:0}, shareToken:"", notes:{},
-    vision:"", focus:{}, water:{}, profileName:"", waterGoal:126, meditation:{}
+    vision:"", focus:{}, water:{}, profileName:"", waterGoal:126, meditation:{}, setLog:{}
   };
 }
 let S = load();
@@ -4730,7 +4735,7 @@ function load(){
 function save(){ const c=Object.assign({},S); delete c.plans; delete c.workouts; localStorage.setItem(LS_KEY, JSON.stringify(c)); scheduleCloudPush(); }
 
 /* ---- cloud sync (Render + Supabase) ---- */
-const CLOUD_KEYS=["checkins","foodLog","trainingLog","activities","water","waterGoal","vision","focus","profileName","groceryRun","currentPlanId","currentWorkoutId","strava","shareToken","notes","meditation"];
+const CLOUD_KEYS=["checkins","foodLog","trainingLog","activities","water","waterGoal","vision","focus","profileName","groceryRun","currentPlanId","currentWorkoutId","strava","shareToken","notes","meditation","setLog"];
 function cloudPersonal(){ const o={}; CLOUD_KEYS.forEach(k=>o[k]=S[k]); return o; }
 function applyCloud(state){ if(!state)return; CLOUD_KEYS.forEach(k=>{ if(state[k]!==undefined) S[k]=state[k]; }); }
 let _pushT=null;
@@ -5434,8 +5439,20 @@ function renderTrain(){
     } else {
       main+=`<div class="warmup">🤸 Warm-up: 5 min + 5–10 min stretching the muscles you'll train</div>`;
     }
-    d.exercises.forEach(ex=>{
-      main+=`<div class="ex"${sw?' style="opacity:.45"':''}><a href="https://julielohre.com/?s=${encodeURIComponent(ex.name)}" target="_blank" rel="noopener">${esc(ex.name)}</a><span class="sr">${ex.sets?esc(ex.sets)+' × ':''}${esc(ex.reps)} reps</span></div>`;
+    const isCircuit=/circuit/i.test(d.label);
+    const unitLetter=isCircuit?'R':'S'; // R=rounds, S=sets (visual is same, aria-label differs)
+    d.exercises.forEach((ex,exIdx)=>{
+      const n=parseInt(ex.sets)||4;
+      const done=(S.setLog&&S.setLog[wk]&&S.setLog[wk][d.id]&&S.setLog[wk][d.id][exIdx])||[];
+      const boxes=Array.from({length:n},(_,si)=>{
+        const on=done[si]?' on':'';
+        return `<span class="set-box${on}" onclick="toggleSet('${d.id}',${exIdx},${si})" aria-label="${unitLetter}${si+1}" title="${isCircuit?'Round':'Set'} ${si+1}"></span>`;
+      }).join('');
+      main+=`<div class="ex"${sw?' style="opacity:.45"':''}>
+        <a href="https://julielohre.com/?s=${encodeURIComponent(ex.name)}" target="_blank" rel="noopener">${esc(ex.name)}</a>
+        <span class="sr">${ex.sets?esc(ex.sets)+' × ':''}${esc(ex.reps)} reps</span>
+        <span class="set-boxes">${boxes}</span>
+      </div>`;
     });
     if(d.cardio&&!sw) main+=`<div class="cardio">🔥 ${esc(d.cardio)}</div>`;
     main+=`</div></div>`;
@@ -5458,6 +5475,17 @@ function renderTrain(){
   }
   side+=`</div>`;
   $('#p-train').innerHTML=`<div class="split"><div class="col-main">${main}</div><aside class="col-side">${side}</aside></div>`;
+}
+function toggleSet(dayId, exIdx, setIdx){
+  const wk=weekKey();
+  S.setLog=S.setLog||{}; S.setLog[wk]=S.setLog[wk]||{}; S.setLog[wk][dayId]=S.setLog[wk][dayId]||{};
+  const arr=(S.setLog[wk][dayId][exIdx]||[]).slice();
+  arr[setIdx]=!arr[setIdx];
+  // trim trailing falsy
+  while(arr.length && !arr[arr.length-1]) arr.pop();
+  if(arr.length) S.setLog[wk][dayId][exIdx]=arr; else delete S.setLog[wk][dayId][exIdx];
+  if(!Object.keys(S.setLog[wk][dayId]).length) delete S.setLog[wk][dayId];
+  save(); renderTrain();
 }
 function toggleDay(id){const wk=weekKey();S.trainingLog[wk]=S.trainingLog[wk]||{};
   const cur=S.trainingLog[wk][id];
@@ -5702,6 +5730,7 @@ function importFile(e){
     if(j.cloud)S.cloud=Object.assign(S.cloud||{},j.cloud);
     if(j.notes)S.notes=Object.assign(S.notes||{},j.notes);
     if(j.meditation)S.meditation=Object.assign(S.meditation||{},j.meditation);
+    if(j.setLog)S.setLog=Object.assign(S.setLog||{},j.setLog);
     save();renderData();toast('Imported '+(j.checkins?j.checkins.length+' check-ins':'data'));
   }catch(err){toast('Could not read file');}};
   rd.readAsText(f);
