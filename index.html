@@ -200,6 +200,13 @@ details.have summary::-webkit-details-marker{display:none}
 .modal{position:fixed;inset:0;background:rgba(20,36,47,.45);display:none;align-items:flex-end;justify-content:center;z-index:300}
 .modal.show{display:flex}
 .sheet{background:var(--card);width:100%;max-width:540px;border-radius:20px 20px 0 0;padding:18px 16px calc(20px + env(safe-area-inset-bottom));max-height:86vh;overflow:auto;animation:up .22s ease}
+.ex-modal{position:fixed;inset:0;background:rgba(20,36,47,.7);display:none;align-items:center;justify-content:center;z-index:400;padding:20px}
+.ex-modal.show{display:flex}
+.ex-sheet{background:var(--card);width:100%;max-width:960px;height:92vh;border-radius:16px;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 20px 60px rgba(0,0,0,.4);animation:up .2s ease}
+.ex-head{display:flex;align-items:center;gap:10px;padding:12px 14px;border-bottom:1px solid var(--line)}
+.ex-head b{flex:1;font-size:15px;font-weight:800;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#exFrame{flex:1;border:none;width:100%;background:#fff}
+@media(max-width:640px){.ex-modal{padding:0}.ex-sheet{height:100vh;border-radius:0}}
 @keyframes up{from{transform:translateY(30px)}to{transform:none}}
 .sheet h3{font-size:17px;font-weight:800;margin-bottom:4px}
 .searchres{padding:10px 4px;border-bottom:1px solid var(--line);cursor:pointer;display:flex;gap:10px;align-items:center}
@@ -239,6 +246,16 @@ a.link{color:var(--accent-d);font-weight:700;text-decoration:none}
 
 <div class="toast" id="toast"></div>
 <div class="modal" id="modal" onclick="if(event.target===this)closeModal()"><div class="sheet" id="sheet"></div></div>
+<div class="ex-modal" id="exModal" onclick="if(event.target===this)closeExercise()">
+  <div class="ex-sheet">
+    <div class="ex-head">
+      <b id="exModalTitle"></b>
+      <a id="exModalOpen" target="_blank" rel="noopener" class="btn sec" style="padding:6px 12px;font-size:12px">Open ↗</a>
+      <button class="btn sec" style="padding:6px 12px;font-size:12px" onclick="closeExercise()">Close ✕</button>
+    </div>
+    <iframe id="exFrame" title="Exercise demo" allowfullscreen></iframe>
+  </div>
+</div>
 
 <script>
 /* ============================ PUBLIC SEED (non-sensitive) ============================ */
@@ -5449,7 +5466,7 @@ function renderTrain(){
         return `<span class="set-box${on}" onclick="toggleSet('${d.id}',${exIdx},${si})" aria-label="${unitLetter}${si+1}" title="${isCircuit?'Round':'Set'} ${si+1}"></span>`;
       }).join('');
       main+=`<div class="ex"${sw?' style="opacity:.45"':''}>
-        <a href="https://julielohre.com/?s=${encodeURIComponent(ex.name)}" target="_blank" rel="noopener">${esc(ex.name)}</a>
+        <a href="#" onclick="event.preventDefault();openExercise('${esc(ex.name).replace(/'/g,"\\'")}')">${esc(ex.name)}</a>
         <span class="sr">${ex.sets?esc(ex.sets)+' × ':''}${esc(ex.reps)} reps</span>
         <span class="set-boxes">${boxes}</span>
       </div>`;
@@ -5746,6 +5763,19 @@ function resetAll(){if(confirm('Clear all data on THIS device? (Your backup/expo
 /* ============================ MODAL ============================ */
 function openModal(html){$('#sheet').innerHTML=html;$('#modal').classList.add('show');}
 function closeModal(){$('#modal').classList.remove('show');}
+function openExercise(name){
+  const url='https://julielohre.com/?s='+encodeURIComponent(name);
+  $('#exModalTitle').textContent=name;
+  $('#exModalOpen').href=url;
+  $('#exFrame').src=url;
+  $('#exModal').classList.add('show');
+  document.body.style.overflow='hidden';
+}
+function closeExercise(){
+  $('#exModal').classList.remove('show');
+  $('#exFrame').src='about:blank';
+  document.body.style.overflow='';
+}
 
 /* ============================ BOOT ============================ */
 async function boot(){
