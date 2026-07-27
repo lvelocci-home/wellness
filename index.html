@@ -206,6 +206,9 @@ details.have summary::-webkit-details-marker{display:none}
 .ex-head{display:flex;align-items:center;gap:10px;padding:12px 14px;border-bottom:1px solid var(--line)}
 .ex-head b{flex:1;font-size:15px;font-weight:800;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 #exFrame{flex:1;border:none;width:100%;background:#fff}
+.ex-pin-row{display:flex;gap:8px;padding:10px 14px;background:var(--bg2);border-bottom:1px solid var(--line);align-items:center}
+.ex-pin-row .inp{flex:1;font-size:13px;padding:8px 10px}
+.ex-pin-row .btn{padding:8px 12px;font-size:12px}
 @media(max-width:640px){.ex-modal{padding:0}.ex-sheet{height:100vh;border-radius:0}}
 @keyframes up{from{transform:translateY(30px)}to{transform:none}}
 .sheet h3{font-size:17px;font-weight:800;margin-bottom:4px}
@@ -250,8 +253,15 @@ a.link{color:var(--accent-d);font-weight:700;text-decoration:none}
   <div class="ex-sheet">
     <div class="ex-head">
       <b id="exModalTitle"></b>
+      <button class="btn sec" style="padding:6px 12px;font-size:12px" onclick="showPinField()" title="Pin your preferred YouTube video for this exercise">📌 Pin</button>
       <a id="exModalOpen" target="_blank" rel="noopener" class="btn sec" style="padding:6px 12px;font-size:12px">Open ↗</a>
       <button class="btn sec" style="padding:6px 12px;font-size:12px" onclick="closeExercise()">Close ✕</button>
+    </div>
+    <div id="exPinRow" class="ex-pin-row" style="display:none">
+      <input class="inp" id="exPinUrl" placeholder="Paste a YouTube URL (e.g. https://youtu.be/…)">
+      <button class="btn" onclick="savePinnedVideo()">Save</button>
+      <button class="btn sec" onclick="unpinVideo()">Reset</button>
+      <button class="btn sec" onclick="hidePinField()">Cancel</button>
     </div>
     <iframe id="exFrame" title="Exercise demo" allowfullscreen></iframe>
   </div>
@@ -4736,7 +4746,7 @@ function defaultState(){
     // personal (local-only)
     foodLog:{}, trainingLog:{}, checkins:[], activities:[], strava:{workerUrl:"",token:"",lastSync:0},
     cloud:{url:"",token:"",lastSync:0}, shareToken:"", notes:{},
-    vision:"", focus:{}, water:{}, profileName:"", waterGoal:126, meditation:{}, setLog:{}
+    vision:"", focus:{}, water:{}, profileName:"", waterGoal:126, meditation:{}, setLog:{}, exerciseVideos:{}
   };
 }
 let S = load();
@@ -4752,7 +4762,7 @@ function load(){
 function save(){ const c=Object.assign({},S); delete c.plans; delete c.workouts; localStorage.setItem(LS_KEY, JSON.stringify(c)); scheduleCloudPush(); }
 
 /* ---- cloud sync (Render + Supabase) ---- */
-const CLOUD_KEYS=["checkins","foodLog","trainingLog","activities","water","waterGoal","vision","focus","profileName","groceryRun","currentPlanId","currentWorkoutId","strava","shareToken","notes","meditation","setLog"];
+const CLOUD_KEYS=["checkins","foodLog","trainingLog","activities","water","waterGoal","vision","focus","profileName","groceryRun","currentPlanId","currentWorkoutId","strava","shareToken","notes","meditation","setLog","exerciseVideos"];
 function cloudPersonal(){ const o={}; CLOUD_KEYS.forEach(k=>o[k]=S[k]); return o; }
 function applyCloud(state){ if(!state)return; CLOUD_KEYS.forEach(k=>{ if(state[k]!==undefined) S[k]=state[k]; }); }
 let _pushT=null;
@@ -5748,6 +5758,7 @@ function importFile(e){
     if(j.notes)S.notes=Object.assign(S.notes||{},j.notes);
     if(j.meditation)S.meditation=Object.assign(S.meditation||{},j.meditation);
     if(j.setLog)S.setLog=Object.assign(S.setLog||{},j.setLog);
+    if(j.exerciseVideos)S.exerciseVideos=Object.assign(S.exerciseVideos||{},j.exerciseVideos);
     save();renderData();toast('Imported '+(j.checkins?j.checkins.length+' check-ins':'data'));
   }catch(err){toast('Could not read file');}};
   rd.readAsText(f);
@@ -5763,18 +5774,153 @@ function resetAll(){if(confirm('Clear all data on THIS device? (Your backup/expo
 /* ============================ MODAL ============================ */
 function openModal(html){$('#sheet').innerHTML=html;$('#modal').classList.add('show');}
 function closeModal(){$('#modal').classList.remove('show');}
+/* Seeded exercise → YouTube video ID map. Curated from well-known fitness channels.
+   User's pinned videos in S.exerciseVideos override these. */
+const EXERCISE_VIDEO_SEED = {
+  "Back Squats":"ultWZbUMPL8",
+  "Romanian Deadlift":"JCXUYuzwNrM",
+  "Stiff Leg Deadlift":"1uDiW5--rAE",
+  "Stiff Leg Barbell Deadlifts":"1uDiW5--rAE",
+  "Single Leg Deadlift":"MjS7HMj1p-8",
+  "Single Leg DB or KB Deadlifts":"MjS7HMj1p-8",
+  "Bench Press":"rT7DgCr-3pg",
+  "Incline DB Bench Press":"8iPEnn-ltC8",
+  "Push Press":"5Tsl9-mn3jk",
+  "Overhead Shoulder Press":"qEwKCR5JCog",
+  "Standing Overhead Press":"qEwKCR5JCog",
+  "Arnold Press":"3ml7BH7mNwQ",
+  "Lateral Raises":"3VcKaXpzqRo",
+  "Front Raises":"-t7fuZ0KhDA",
+  "Rear Delt Flyes":"EA7u4Q_8HQ0",
+  "Bicep Curls":"ykJmrZ5v0Oo",
+  "DB Bicep Curls":"ykJmrZ5v0Oo",
+  "Hammer Curls":"zC3nLlEvin4",
+  "Tricep Pressdowns":"2-LAMcpzODU",
+  "Tricep Kickbacks":"6SS6K3lAiYY",
+  "Tricep Bench Dips":"6kALZikXxLc",
+  "Overhead Tricep Extension":"nRiJVZDpdL0",
+  "Lat Pulldowns":"CAwf7n6Luuc",
+  "Bent Over Rows":"9efgcAjQe7E",
+  "Single Arm Dumbbell Rows":"pYcpY20QaE8",
+  "Gorilla Rows":"YOJZgKz2Y-4",
+  "Deadlift to Row":"kzMwiPZOCP8",
+  "Sumo Deadlift High Pull":"L3n4A2S7dj4",
+  "Walking Lunges":"L8fvypPrzzs",
+  "Alternating Lunges":"D7KaRcUTQeE",
+  "Static Lunges":"D7KaRcUTQeE",
+  "Forward Lunge with a Lateral Raise":"E4hxKGZ7SDU",
+  "Goblet Squats":"MeIiIdhvXT4",
+  "Plie Squats":"jgh6sGwtTwk",
+  "Sumo Squats":"jgh6sGwtTwk",
+  "Suitcase Squats":"XiZS0v3Otcs",
+  "Air Squats":"C_VtOYc6j5c",
+  "Hip Thrusts":"LM8XHLYJoYs",
+  "Marching Glute Bridges":"WLQ_ITiFj6Y",
+  "Glute Bridge Pull Aparts":"HW9NpvFAqiI",
+  "Donkey Kick Backs":"8lPvE-Ijx78",
+  "Standing Glute Kickbacks":"UNq2rSitS7A",
+  "Frog Pumps":"Rvo3STQyaFI",
+  "Froggy Glute Lifts":"5vLj7GTQVJk",
+  "Clam Shells":"1nAHqe9U-YE",
+  "X Band Walks":"y9uUCoEHKXA",
+  "Kettlebell Swings":"YSxHifyI6s8",
+  "Kettle Bell Swings":"YSxHifyI6s8",
+  "Bird Dog Crunches":"wiFNA3sqjCA",
+  "Plank Hold":"pSHjTRCQxIw",
+  "Side Plank Pulses":"K2VljzCC16g",
+  "Russian Twists":"wkD8rjkodUI",
+  "Bicycle Crunches":"9FGilxCbdz8",
+  "Standing Bicycle Crunches":"UDNjW87NC-o",
+  "Ball Crunches":"YyvSfVjQeL0",
+  "Butterfly Situps":"CDIL1_dp15I",
+  "Boat Pose Holds":"1egLL5UEcCM",
+  "Superman Holds":"cc6UVRS7PW4",
+  "Burpees":"auBLPXO8Fww",
+  "Lying Leg Raises":"JB2oyawG9KI",
+  "Flutterkicks":"eEJlAtn7wsE",
+  "Pallof Twist":"AH_QZLm_0-s",
+  "Wood Choppers":"pAplQXk3dkU",
+  "Wood Chop with Dumbbells":"pAplQXk3dkU",
+  "Halo Exercise":"UEcyfyHOVU4",
+  "DB Halos":"UEcyfyHOVU4",
+  "Pike Pushups":"KEV1i2i3Ijg",
+  "Wall Pushups":"D0K10cnEXbo",
+  "Hand Release Push Ups":"nAj85Kj_LNo",
+  "Scapular Retractions":"iKMxHJZ3T4Q",
+  "Band Pull Aparts":"9-xKnDp8Nf0",
+  "External Delt Rotations":"aqe1uP9lPKM",
+  "Wall Sit":"y-wV4Venusw",
+  "Calf Raises":"YMmgqO8Jo-k",
+  "Leg Press":"IZxyjW7MPJQ",
+  "Hip Abduction":"yWWv7O7fygU",
+  "Good Mornings":"vKPGe8zb0j0",
+  "Bench Step Ups":"WCFCdxzFBa4",
+  "Glute Step Ups":"WCFCdxzFBa4",
+  "Hamstring Curls":"1Tq3QdYUuHs"
+};
+
+function ytIdFromUrl(url){
+  if(!url)return null;
+  const m=url.match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/|shorts\/|v\/))([A-Za-z0-9_-]{11})/);
+  return m?m[1]:(/^[A-Za-z0-9_-]{11}$/.test(url.trim())?url.trim():null);
+}
+function getExerciseVideoId(name){
+  const pinned=S.exerciseVideos&&S.exerciseVideos[name];
+  if(pinned) return pinned;
+  return EXERCISE_VIDEO_SEED[name]||null;
+}
+
+let _exCurrent="";
 function openExercise(name){
-  const url='https://julielohre.com/?s='+encodeURIComponent(name);
+  _exCurrent=name;
   $('#exModalTitle').textContent=name;
-  $('#exModalOpen').href=url;
-  $('#exFrame').src=url;
+  hidePinField();
+  const vid=getExerciseVideoId(name);
+  if(vid){
+    const embed='https://www.youtube.com/embed/'+vid+'?rel=0&modestbranding=1';
+    $('#exFrame').src=embed;
+    $('#exModalOpen').href='https://www.youtube.com/watch?v='+vid;
+  } else {
+    const search='https://www.youtube.com/results?search_query='+encodeURIComponent(name+' exercise form');
+    $('#exFrame').src='about:blank';
+    $('#exModalOpen').href=search;
+    showPinField(); // no video yet — prompt user to pin one
+  }
   $('#exModal').classList.add('show');
   document.body.style.overflow='hidden';
 }
 function closeExercise(){
   $('#exModal').classList.remove('show');
   $('#exFrame').src='about:blank';
+  hidePinField();
   document.body.style.overflow='';
+  _exCurrent="";
+}
+function showPinField(){
+  const cur=S.exerciseVideos&&S.exerciseVideos[_exCurrent];
+  $('#exPinUrl').value=cur?'https://youtu.be/'+cur:'';
+  $('#exPinRow').style.display='flex';
+  setTimeout(()=>$('#exPinUrl').focus(),50);
+}
+function hidePinField(){ $('#exPinRow').style.display='none'; }
+function savePinnedVideo(){
+  const url=$('#exPinUrl').value.trim();
+  const id=ytIdFromUrl(url);
+  if(!id){ toast('Paste a YouTube URL (or 11-char video ID)'); return; }
+  S.exerciseVideos=S.exerciseVideos||{};
+  S.exerciseVideos[_exCurrent]=id;
+  save();
+  $('#exFrame').src='https://www.youtube.com/embed/'+id+'?rel=0&modestbranding=1';
+  $('#exModalOpen').href='https://www.youtube.com/watch?v='+id;
+  hidePinField();
+  toast('Pinned');
+}
+function unpinVideo(){
+  if(!S.exerciseVideos||!S.exerciseVideos[_exCurrent]){ toast('Nothing pinned'); return; }
+  delete S.exerciseVideos[_exCurrent]; save();
+  // reopen to reflect fallback
+  openExercise(_exCurrent);
+  toast('Cleared');
 }
 
 /* ============================ BOOT ============================ */
