@@ -3045,7 +3045,7 @@ const SEED_WORKOUTS = [
     "name": "3-day Endurance Circuit",
     "days": [
       {
-        "label": "Day 1 · Upper & Abs",
+        "label": "Day 1 \u00b7 Upper & Abs",
         "exercises": [
           {
             "name": "Thrusters",
@@ -3078,10 +3078,27 @@ const SEED_WORKOUTS = [
             "sets": "4"
           }
         ],
-        "id": "d1"
+        "id": "d1",
+        "groups": [
+          {
+            "type": "straight",
+            "label": "Straight Sets",
+            "reps": "see per exercise",
+            "sets": 4,
+            "indices": [
+              0,
+              1,
+              2,
+              3,
+              4,
+              5
+            ],
+            "note": "Sets 1-2 are mandatory (white); set 3 is the goal (pink); set 4 is a stretch goal (blue)"
+          }
+        ]
       },
       {
-        "label": "Day 2 · Lower",
+        "label": "Day 2 \u00b7 Lower",
         "exercises": [
           {
             "name": "Dead - Curl - Press",
@@ -3114,10 +3131,27 @@ const SEED_WORKOUTS = [
             "sets": "4"
           }
         ],
-        "id": "d2"
+        "id": "d2",
+        "groups": [
+          {
+            "type": "straight",
+            "label": "Straight Sets",
+            "reps": "see per exercise",
+            "sets": 4,
+            "indices": [
+              0,
+              1,
+              2,
+              3,
+              4,
+              5
+            ],
+            "note": "Sets 1-2 are mandatory (white); set 3 is the goal (pink); set 4 is a stretch goal (blue)"
+          }
+        ]
       },
       {
-        "label": "Day 3 · Endurance Circuit",
+        "label": "Day 3 \u00b7 Endurance Circuit",
         "exercises": [
           {
             "name": "Bench Step Ups",
@@ -3165,7 +3199,27 @@ const SEED_WORKOUTS = [
             "sets": "4"
           }
         ],
-        "id": "d3"
+        "id": "d3",
+        "groups": [
+          {
+            "type": "circuit",
+            "label": "Endurance AMRAP",
+            "reps": "see per exercise",
+            "rounds": "AMRAP",
+            "indices": [
+              0,
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7,
+              8
+            ],
+            "note": "Time cutoff 20 min (weeks 1-2) or 25 min (weeks 3-4). Complete as many rounds as possible. Rest as needed."
+          }
+        ]
       }
     ]
   },
@@ -3174,7 +3228,7 @@ const SEED_WORKOUTS = [
     "name": "4-day Legs + Upper",
     "days": [
       {
-        "label": "Day 1 · Legs & Abs",
+        "label": "Day 1 \u00b7 Legs & Abs",
         "exercises": [
           {
             "name": "Dumbbell Thrusters",
@@ -3227,10 +3281,43 @@ const SEED_WORKOUTS = [
             "sets": "4"
           }
         ],
-        "id": "d1"
+        "id": "d1",
+        "groups": [
+          {
+            "type": "circuit",
+            "label": "Circuit 1",
+            "reps": "see per exercise",
+            "rounds": 4,
+            "indices": [
+              0,
+              1,
+              2,
+              3,
+              4
+            ]
+          },
+          {
+            "type": "cardio",
+            "label": "Rest",
+            "note": "1 minute between circuits"
+          },
+          {
+            "type": "circuit",
+            "label": "Circuit 2",
+            "reps": "see per exercise",
+            "rounds": 4,
+            "indices": [
+              5,
+              6,
+              7,
+              8,
+              9
+            ]
+          }
+        ]
       },
       {
-        "label": "Day 2 · Upper",
+        "label": "Day 2 \u00b7 Upper",
         "exercises": [
           {
             "name": "Lateral Raise Pulses",
@@ -3273,10 +3360,52 @@ const SEED_WORKOUTS = [
             "sets": "4"
           }
         ],
-        "id": "d2"
+        "id": "d2",
+        "groups": [
+          {
+            "type": "superset",
+            "label": "Superset A",
+            "reps": "see per exercise",
+            "sets": 3,
+            "indices": [
+              0,
+              1
+            ]
+          },
+          {
+            "type": "superset",
+            "label": "Superset B",
+            "reps": "see per exercise",
+            "sets": 3,
+            "indices": [
+              2,
+              3
+            ]
+          },
+          {
+            "type": "superset",
+            "label": "Superset C",
+            "reps": "see per exercise",
+            "sets": 3,
+            "indices": [
+              4,
+              5
+            ]
+          },
+          {
+            "type": "superset",
+            "label": "Superset D",
+            "reps": "see per exercise",
+            "sets": 3,
+            "indices": [
+              6,
+              7
+            ]
+          }
+        ]
       },
       {
-        "label": "Day 3 · Legs & Abs",
+        "label": "Day 3 \u00b7 Legs & Abs",
         "exercises": [
           {
             "name": "Suitcase Squats",
@@ -3319,10 +3448,52 @@ const SEED_WORKOUTS = [
             "sets": "4"
           }
         ],
-        "id": "d3"
+        "id": "d3",
+        "groups": [
+          {
+            "type": "straight",
+            "label": "Day's Big Movement",
+            "reps": "6-10",
+            "sets": 4,
+            "indices": [
+              0
+            ]
+          },
+          {
+            "type": "superset",
+            "label": "Superset A",
+            "reps": "see per exercise",
+            "sets": 3,
+            "indices": [
+              1,
+              2
+            ]
+          },
+          {
+            "type": "superset",
+            "label": "Superset B",
+            "reps": "see per exercise",
+            "sets": 3,
+            "indices": [
+              3,
+              4
+            ]
+          },
+          {
+            "type": "superset",
+            "label": "Superset C",
+            "reps": "see per exercise",
+            "sets": 3,
+            "indices": [
+              5,
+              6,
+              7
+            ]
+          }
+        ]
       },
       {
-        "label": "Day 4 · Upper",
+        "label": "Day 4 \u00b7 Upper",
         "exercises": [
           {
             "name": "Lateral Raises",
@@ -3360,7 +3531,48 @@ const SEED_WORKOUTS = [
             "sets": "4"
           }
         ],
-        "id": "d4"
+        "id": "d4",
+        "groups": [
+          {
+            "type": "straight",
+            "label": "Day's Big Movement",
+            "reps": "10-12",
+            "sets": 4,
+            "indices": [
+              0
+            ]
+          },
+          {
+            "type": "superset",
+            "label": "Superset A",
+            "reps": "see per exercise",
+            "sets": 3,
+            "indices": [
+              1,
+              2
+            ]
+          },
+          {
+            "type": "superset",
+            "label": "Superset B",
+            "reps": "see per exercise",
+            "sets": 3,
+            "indices": [
+              3,
+              4
+            ]
+          },
+          {
+            "type": "superset",
+            "label": "Superset C",
+            "reps": "see per exercise",
+            "sets": 3,
+            "indices": [
+              5,
+              6
+            ]
+          }
+        ]
       }
     ]
   },
@@ -3369,7 +3581,7 @@ const SEED_WORKOUTS = [
     "name": "4-day Upper Focus + Full Body",
     "days": [
       {
-        "label": "Day 1 · Upper & Abs",
+        "label": "Day 1 \u00b7 Upper & Abs",
         "exercises": [
           {
             "name": "Med Ball Roll Backs",
@@ -3417,10 +3629,61 @@ const SEED_WORKOUTS = [
             "sets": "4"
           }
         ],
-        "id": "d1"
+        "id": "d1",
+        "groups": [
+          {
+            "type": "straight",
+            "label": "Starting Movement",
+            "reps": "8-11",
+            "sets": 3,
+            "indices": [
+              0
+            ]
+          },
+          {
+            "type": "superset",
+            "label": "Superset 1",
+            "reps": "see per exercise",
+            "sets": 3,
+            "indices": [
+              1,
+              2
+            ]
+          },
+          {
+            "type": "superset",
+            "label": "Superset 2",
+            "reps": "see per exercise",
+            "sets": 3,
+            "indices": [
+              3,
+              4
+            ]
+          },
+          {
+            "type": "superset",
+            "label": "Superset 3",
+            "reps": "see per exercise",
+            "sets": 3,
+            "indices": [
+              5,
+              6
+            ]
+          },
+          {
+            "type": "superset",
+            "label": "Superset 4",
+            "reps": "see per exercise",
+            "sets": 3,
+            "indices": [
+              7,
+              8
+            ]
+          }
+        ]
       },
       {
-        "label": "Day 2 · Lower & Abs",
+        "label": "Day 2 \u00b7 Lower & Abs",
         "exercises": [
           {
             "name": "Air Squats",
@@ -3468,10 +3731,61 @@ const SEED_WORKOUTS = [
             "sets": "4"
           }
         ],
-        "id": "d2"
+        "id": "d2",
+        "groups": [
+          {
+            "type": "straight",
+            "label": "Starting Movement",
+            "reps": "20",
+            "sets": 3,
+            "indices": [
+              0
+            ]
+          },
+          {
+            "type": "superset",
+            "label": "Superset A",
+            "reps": "see per exercise",
+            "sets": 3,
+            "indices": [
+              1,
+              2
+            ]
+          },
+          {
+            "type": "superset",
+            "label": "Superset B",
+            "reps": "see per exercise",
+            "sets": 3,
+            "indices": [
+              3,
+              4
+            ]
+          },
+          {
+            "type": "superset",
+            "label": "Superset C",
+            "reps": "see per exercise",
+            "sets": 3,
+            "indices": [
+              5,
+              6
+            ]
+          },
+          {
+            "type": "superset",
+            "label": "Superset D",
+            "reps": "see per exercise",
+            "sets": 3,
+            "indices": [
+              7,
+              8
+            ]
+          }
+        ]
       },
       {
-        "label": "Day 3 · Upper & Abs",
+        "label": "Day 3 \u00b7 Upper & Abs",
         "exercises": [
           {
             "name": "External Delt Rotations",
@@ -3514,10 +3828,52 @@ const SEED_WORKOUTS = [
             "sets": "4"
           }
         ],
-        "id": "d3"
+        "id": "d3",
+        "groups": [
+          {
+            "type": "superset",
+            "label": "Superset A",
+            "reps": "see per exercise",
+            "sets": 3,
+            "indices": [
+              0,
+              1
+            ]
+          },
+          {
+            "type": "superset",
+            "label": "Superset B",
+            "reps": "see per exercise",
+            "sets": 3,
+            "indices": [
+              2,
+              3
+            ]
+          },
+          {
+            "type": "superset",
+            "label": "Superset C",
+            "reps": "see per exercise",
+            "sets": 3,
+            "indices": [
+              4,
+              5
+            ]
+          },
+          {
+            "type": "superset",
+            "label": "Superset D",
+            "reps": "see per exercise",
+            "sets": 3,
+            "indices": [
+              6,
+              7
+            ]
+          }
+        ]
       },
       {
-        "label": "Day 4 · Full Body",
+        "label": "Day 4 \u00b7 Full Body",
         "exercises": [
           {
             "name": "Plie Squat Pulses",
@@ -3555,7 +3911,25 @@ const SEED_WORKOUTS = [
             "sets": "4"
           }
         ],
-        "id": "d4"
+        "id": "d4",
+        "groups": [
+          {
+            "type": "straight",
+            "label": "Full Body Straight Sets",
+            "reps": "see per exercise",
+            "sets": 3,
+            "indices": [
+              0,
+              1,
+              2,
+              3,
+              4,
+              5,
+              6
+            ],
+            "note": "Rest 30 seconds between sets. NOT supersets or a circuit \u2014 complete all sets of one exercise before moving on."
+          }
+        ]
       }
     ]
   },
@@ -3564,7 +3938,7 @@ const SEED_WORKOUTS = [
     "name": "4-day Upper/Lower Alternating",
     "days": [
       {
-        "label": "Day 1 · Upper",
+        "label": "Day 1 \u00b7 Upper",
         "exercises": [
           {
             "name": "Push Press",
@@ -3617,7 +3991,7 @@ const SEED_WORKOUTS = [
           {
             "type": "straight",
             "label": "Warmup: Push Press",
-            "reps": "15, 10, 5, 5 (wk 1-2) → 20, 20, 10, 10 (wk 3-4)",
+            "reps": "15, 10, 5, 5 (wk 1-2) \u2192 20, 20, 10, 10 (wk 3-4)",
             "sets": 4,
             "indices": [
               0
@@ -3626,7 +4000,7 @@ const SEED_WORKOUTS = [
           {
             "type": "superset",
             "label": "Pulldowns + Dips",
-            "reps": "8 → 10",
+            "reps": "8 \u2192 10",
             "sets": 4,
             "indices": [
               1,
@@ -3636,7 +4010,7 @@ const SEED_WORKOUTS = [
           {
             "type": "superset",
             "label": "OH Press + Retractions",
-            "reps": "8 → 10 · 10 → 12",
+            "reps": "8 \u2192 10 \u00b7 10 \u2192 12",
             "sets": 4,
             "indices": [
               3,
@@ -3646,7 +4020,7 @@ const SEED_WORKOUTS = [
           {
             "type": "superset",
             "label": "Flyes + Pullovers",
-            "reps": "8 → 10 · 10",
+            "reps": "8 \u2192 10 \u00b7 10",
             "sets": 4,
             "indices": [
               5,
@@ -3656,7 +4030,7 @@ const SEED_WORKOUTS = [
           {
             "type": "superset",
             "label": "Curls + Extensions",
-            "reps": "8 → 10 · 10",
+            "reps": "8 \u2192 10 \u00b7 10",
             "sets": 4,
             "indices": [
               7,
@@ -3666,12 +4040,12 @@ const SEED_WORKOUTS = [
           {
             "type": "cardio",
             "label": "Post-workout cardio",
-            "note": "15 intervals — 15s all-out / 30s recovery"
+            "note": "15 intervals \u2014 15s all-out / 30s recovery"
           }
         ]
       },
       {
-        "label": "Day 2 · Lower + Abs",
+        "label": "Day 2 \u00b7 Lower + Abs",
         "exercises": [
           {
             "name": "Back Squats",
@@ -3724,7 +4098,7 @@ const SEED_WORKOUTS = [
           {
             "type": "straight",
             "label": "Warmup: Back Squats",
-            "reps": "15, 10, 5, 5 → 20, 20, 10, 10",
+            "reps": "15, 10, 5, 5 \u2192 20, 20, 10, 10",
             "sets": 4,
             "indices": [
               0
@@ -3733,7 +4107,7 @@ const SEED_WORKOUTS = [
           {
             "type": "superset",
             "label": "Deadlifts + Bicycle Crunches",
-            "reps": "8 → 10",
+            "reps": "8 \u2192 10",
             "sets": 4,
             "indices": [
               1,
@@ -3743,7 +4117,7 @@ const SEED_WORKOUTS = [
           {
             "type": "superset",
             "label": "Plank Cross-overs + Side Bends",
-            "reps": "8 → 10 · 12 → 14",
+            "reps": "8 \u2192 10 \u00b7 12 \u2192 14",
             "sets": 4,
             "indices": [
               3,
@@ -3753,7 +4127,7 @@ const SEED_WORKOUTS = [
           {
             "type": "superset",
             "label": "Single-leg DL + Russian Twists",
-            "reps": "8 → 10 · 10",
+            "reps": "8 \u2192 10 \u00b7 10",
             "sets": 4,
             "indices": [
               5,
@@ -3763,7 +4137,7 @@ const SEED_WORKOUTS = [
           {
             "type": "superset",
             "label": "KB Swings + Donkey Kicks",
-            "reps": "8 → 10 · 10",
+            "reps": "8 \u2192 10 \u00b7 10",
             "sets": 4,
             "indices": [
               7,
@@ -3773,12 +4147,12 @@ const SEED_WORKOUTS = [
           {
             "type": "cardio",
             "label": "Post-workout cardio",
-            "note": "10 intervals — 40s all-out / 30s recovery"
+            "note": "10 intervals \u2014 40s all-out / 30s recovery"
           }
         ]
       },
       {
-        "label": "Day 3 · Upper",
+        "label": "Day 3 \u00b7 Upper",
         "exercises": [
           {
             "name": "Thrusters",
@@ -3831,7 +4205,7 @@ const SEED_WORKOUTS = [
           {
             "type": "straight",
             "label": "Warmup: Thrusters",
-            "reps": "15, 10, 5, 5 → 20, 20, 10, 10",
+            "reps": "15, 10, 5, 5 \u2192 20, 20, 10, 10",
             "sets": 4,
             "indices": [
               0
@@ -3840,7 +4214,7 @@ const SEED_WORKOUTS = [
           {
             "type": "superset",
             "label": "Hammer Curls + Arnold Press",
-            "reps": "8 → 10",
+            "reps": "8 \u2192 10",
             "sets": 4,
             "indices": [
               1,
@@ -3850,7 +4224,7 @@ const SEED_WORKOUTS = [
           {
             "type": "superset",
             "label": "Rows + Halos",
-            "reps": "8 → 10 · 12 → 14",
+            "reps": "8 \u2192 10 \u00b7 12 \u2192 14",
             "sets": 4,
             "indices": [
               3,
@@ -3860,7 +4234,7 @@ const SEED_WORKOUTS = [
           {
             "type": "superset",
             "label": "Lateral Raises + Tricep Ext",
-            "reps": "8 → 10 · 10",
+            "reps": "8 \u2192 10 \u00b7 10",
             "sets": 4,
             "indices": [
               5,
@@ -3870,7 +4244,7 @@ const SEED_WORKOUTS = [
           {
             "type": "superset",
             "label": "Pull-ups + Wood Choppers",
-            "reps": "8 → 10",
+            "reps": "8 \u2192 10",
             "sets": 4,
             "indices": [
               7,
@@ -3885,7 +4259,7 @@ const SEED_WORKOUTS = [
         ]
       },
       {
-        "label": "Day 4 · Lower + Abs",
+        "label": "Day 4 \u00b7 Lower + Abs",
         "exercises": [
           {
             "name": "Romanian Deadlift",
@@ -3938,7 +4312,7 @@ const SEED_WORKOUTS = [
           {
             "type": "straight",
             "label": "Warmup: Romanian Deadlift",
-            "reps": "10, 10, 5, 5 → 12, 10, 5, 5",
+            "reps": "10, 10, 5, 5 \u2192 12, 10, 5, 5",
             "sets": 4,
             "indices": [
               0
@@ -3947,7 +4321,7 @@ const SEED_WORKOUTS = [
           {
             "type": "superset",
             "label": "Ball Passes + Hamstring Curls",
-            "reps": "8 → 10",
+            "reps": "8 \u2192 10",
             "sets": 4,
             "indices": [
               1,
@@ -3957,7 +4331,7 @@ const SEED_WORKOUTS = [
           {
             "type": "superset",
             "label": "X Band Walks + Plie Squats",
-            "reps": "8 → 10 · 12 → 14",
+            "reps": "8 \u2192 10 \u00b7 12 \u2192 14",
             "sets": 4,
             "indices": [
               3,
@@ -3967,7 +4341,7 @@ const SEED_WORKOUTS = [
           {
             "type": "superset",
             "label": "Hip Thrusts + Alt Lunges",
-            "reps": "8 → 10 · 10",
+            "reps": "8 \u2192 10 \u00b7 10",
             "sets": 4,
             "indices": [
               5,
@@ -3977,7 +4351,7 @@ const SEED_WORKOUTS = [
           {
             "type": "superset",
             "label": "Leg Press + Butterfly Situps",
-            "reps": "8 → 10 · 10",
+            "reps": "8 \u2192 10 \u00b7 10",
             "sets": 4,
             "indices": [
               7,
@@ -3987,7 +4361,7 @@ const SEED_WORKOUTS = [
           {
             "type": "cardio",
             "label": "Post-workout cardio",
-            "note": "15 intervals — 15s all-out / 30s recovery"
+            "note": "15 intervals \u2014 15s all-out / 30s recovery"
           }
         ]
       }
@@ -3998,7 +4372,7 @@ const SEED_WORKOUTS = [
     "name": "5-day Full Body Circuit",
     "days": [
       {
-        "label": "Day 1 · Lower + Abs",
+        "label": "Day 1 \u00b7 Lower + Abs",
         "exercises": [
           {
             "name": "Good Mornings",
@@ -4046,16 +4420,67 @@ const SEED_WORKOUTS = [
             "sets": "4"
           }
         ],
-        "id": "d1"
+        "id": "d1",
+        "groups": [
+          {
+            "type": "straight",
+            "label": "Big Movement",
+            "reps": "8-10",
+            "sets": 4,
+            "indices": [
+              0
+            ]
+          },
+          {
+            "type": "superset",
+            "label": "Superset A",
+            "reps": "see per exercise",
+            "sets": 4,
+            "indices": [
+              1,
+              2
+            ]
+          },
+          {
+            "type": "superset",
+            "label": "Superset B",
+            "reps": "see per exercise",
+            "sets": 4,
+            "indices": [
+              3,
+              4
+            ]
+          },
+          {
+            "type": "superset",
+            "label": "Superset C",
+            "reps": "see per exercise",
+            "sets": 4,
+            "indices": [
+              5,
+              6
+            ]
+          },
+          {
+            "type": "superset",
+            "label": "Superset D",
+            "reps": "see per exercise",
+            "sets": 4,
+            "indices": [
+              7,
+              8
+            ]
+          }
+        ]
       },
       {
-        "label": "Day 2 · Rest & Recovery",
+        "label": "Day 2 \u00b7 Rest & Recovery",
         "rest": true,
         "exercises": [],
         "id": "d2"
       },
       {
-        "label": "Day 3 · Upper Body",
+        "label": "Day 3 \u00b7 Upper Body",
         "exercises": [
           {
             "name": "Arnold Press",
@@ -4098,10 +4523,52 @@ const SEED_WORKOUTS = [
             "sets": "4"
           }
         ],
-        "id": "d3"
+        "id": "d3",
+        "groups": [
+          {
+            "type": "superset",
+            "label": "Superset A",
+            "reps": "see per exercise",
+            "sets": 4,
+            "indices": [
+              0,
+              1
+            ]
+          },
+          {
+            "type": "superset",
+            "label": "Superset B",
+            "reps": "see per exercise",
+            "sets": 4,
+            "indices": [
+              2,
+              3
+            ]
+          },
+          {
+            "type": "superset",
+            "label": "Superset C",
+            "reps": "see per exercise",
+            "sets": 4,
+            "indices": [
+              4,
+              5
+            ]
+          },
+          {
+            "type": "superset",
+            "label": "Superset D",
+            "reps": "see per exercise",
+            "sets": 4,
+            "indices": [
+              6,
+              7
+            ]
+          }
+        ]
       },
       {
-        "label": "Day 4 · Full Body Circuit",
+        "label": "Day 4 \u00b7 Full Body Circuit",
         "exercises": [
           {
             "name": "Dead - Curl - Press",
@@ -4154,10 +4621,43 @@ const SEED_WORKOUTS = [
             "sets": "4"
           }
         ],
-        "id": "d4"
+        "id": "d4",
+        "groups": [
+          {
+            "type": "circuit",
+            "label": "Circuit 1",
+            "reps": "see per exercise",
+            "rounds": 3,
+            "indices": [
+              0,
+              1,
+              2,
+              3
+            ]
+          },
+          {
+            "type": "cardio",
+            "label": "Treadmill",
+            "note": "5 minutes moderate pace between circuits"
+          },
+          {
+            "type": "circuit",
+            "label": "Circuit 2",
+            "reps": "see per exercise",
+            "rounds": 3,
+            "indices": [
+              4,
+              5,
+              6,
+              7,
+              8,
+              9
+            ]
+          }
+        ]
       },
       {
-        "label": "Day 5 · Rest & Recovery",
+        "label": "Day 5 \u00b7 Rest & Recovery",
         "rest": true,
         "exercises": [],
         "id": "d5"
@@ -4169,7 +4669,7 @@ const SEED_WORKOUTS = [
     "name": "5-day Glute Focus + Full Body",
     "days": [
       {
-        "label": "Day 1 · Glute Activation + Abs",
+        "label": "Day 1 \u00b7 Glute Activation + Abs",
         "exercises": [
           {
             "name": "X Band Walks",
@@ -4193,27 +4693,27 @@ const SEED_WORKOUTS = [
           },
           {
             "name": "Plie Squats",
-            "reps": "8–12",
+            "reps": "8\u201312",
             "sets": "4"
           },
           {
             "name": "Static Lunges",
-            "reps": "8–12",
+            "reps": "8\u201312",
             "sets": "4"
           },
           {
             "name": "Standing Crunches",
-            "reps": "8–10",
+            "reps": "8\u201310",
             "sets": "4"
           },
           {
             "name": "Russian Twists",
-            "reps": "8–10",
+            "reps": "8\u201310",
             "sets": "4"
           },
           {
             "name": "Pallof Twist",
-            "reps": "8–10 each",
+            "reps": "8\u201310 each",
             "sets": "4"
           }
         ],
@@ -4235,7 +4735,7 @@ const SEED_WORKOUTS = [
           {
             "type": "straight",
             "label": "Legs",
-            "reps": "8 → 10 → 12 (wk 1-2 / 3 / 4)",
+            "reps": "8 \u2192 10 \u2192 12 (wk 1-2 / 3 / 4)",
             "sets": 4,
             "indices": [
               4,
@@ -4257,32 +4757,32 @@ const SEED_WORKOUTS = [
         ]
       },
       {
-        "label": "Day 2 · Rest & Recovery",
+        "label": "Day 2 \u00b7 Rest & Recovery",
         "rest": true,
         "exercises": [],
         "id": "d2"
       },
       {
-        "label": "Day 3 · Upper Body",
+        "label": "Day 3 \u00b7 Upper Body",
         "exercises": [
           {
             "name": "Lat Pulldowns",
-            "reps": "8–12",
+            "reps": "8\u201312",
             "sets": "4"
           },
           {
             "name": "Single Arm Dumbbell Rows",
-            "reps": "8–12",
+            "reps": "8\u201312",
             "sets": "4"
           },
           {
             "name": "External Delt Rotations",
-            "reps": "8–12",
+            "reps": "8\u201312",
             "sets": "4"
           },
           {
             "name": "Lateral Raises",
-            "reps": "8–12",
+            "reps": "8\u201312",
             "sets": "4"
           },
           {
@@ -4311,7 +4811,7 @@ const SEED_WORKOUTS = [
           {
             "type": "straight",
             "label": "Back",
-            "reps": "8 → 10 → 12",
+            "reps": "8 \u2192 10 \u2192 12",
             "sets": 4,
             "indices": [
               0,
@@ -4321,7 +4821,7 @@ const SEED_WORKOUTS = [
           {
             "type": "straight",
             "label": "Delts",
-            "reps": "8 → 10 → 12",
+            "reps": "8 \u2192 10 \u2192 12",
             "sets": 4,
             "indices": [
               2,
@@ -4351,7 +4851,7 @@ const SEED_WORKOUTS = [
         ]
       },
       {
-        "label": "Day 4 · Legs + Abs",
+        "label": "Day 4 \u00b7 Legs + Abs",
         "exercises": [
           {
             "name": "Suitcase Squats",
@@ -4385,17 +4885,17 @@ const SEED_WORKOUTS = [
           },
           {
             "name": "Standing Bicycle Crunches",
-            "reps": "8–10",
+            "reps": "8\u201310",
             "sets": "4"
           },
           {
             "name": "Ball Crunches",
-            "reps": "8–10",
+            "reps": "8\u201310",
             "sets": "4"
           },
           {
             "name": "Heels to Heaven",
-            "reps": "8–10",
+            "reps": "8\u201310",
             "sets": "4"
           }
         ],
@@ -4438,26 +4938,26 @@ const SEED_WORKOUTS = [
         ]
       },
       {
-        "label": "Day 5 · Full Body",
+        "label": "Day 5 \u00b7 Full Body",
         "exercises": [
           {
             "name": "Arnold Press",
-            "reps": "6–8",
+            "reps": "6\u20138",
             "sets": "4"
           },
           {
             "name": "Superman Holds",
-            "reps": "6–8",
+            "reps": "6\u20138",
             "sets": "4"
           },
           {
             "name": "Forward Lunge with a Lateral Raise",
-            "reps": "6–8",
+            "reps": "6\u20138",
             "sets": "4"
           },
           {
             "name": "Gorilla Rows",
-            "reps": "6–8",
+            "reps": "6\u20138",
             "sets": "4"
           },
           {
@@ -4486,7 +4986,7 @@ const SEED_WORKOUTS = [
           {
             "type": "straight",
             "label": "Full Body",
-            "reps": "6 → 8 → 8",
+            "reps": "6 \u2192 8 \u2192 8",
             "sets": 4,
             "indices": [
               0,
@@ -4498,7 +4998,7 @@ const SEED_WORKOUTS = [
           {
             "type": "cardio",
             "label": "Mid-workout cardio",
-            "note": "10 min intervals — 30s all-out / 30s recovery ×10"
+            "note": "10 min intervals \u2014 30s all-out / 30s recovery \u00d710"
           },
           {
             "type": "straight",
@@ -4520,7 +5020,7 @@ const SEED_WORKOUTS = [
     "name": "6-day Abs + Cardio",
     "days": [
       {
-        "label": "Day 1 · Lower",
+        "label": "Day 1 \u00b7 Lower",
         "exercises": [
           {
             "name": "Back Squats",
@@ -4563,10 +5063,44 @@ const SEED_WORKOUTS = [
             "sets": "4"
           }
         ],
-        "id": "d1"
+        "id": "d1",
+        "groups": [
+          {
+            "type": "straight",
+            "label": "Warmup: Back Squats",
+            "reps": "10",
+            "sets": 4,
+            "indices": [
+              0
+            ]
+          },
+          {
+            "type": "straight",
+            "label": "Lower body",
+            "reps": "8 \u2192 12",
+            "sets": 4,
+            "indices": [
+              1,
+              2,
+              3,
+              4
+            ]
+          },
+          {
+            "type": "straight",
+            "label": "Abs",
+            "reps": "10 \u2192 12",
+            "sets": 4,
+            "indices": [
+              5,
+              6,
+              7
+            ]
+          }
+        ]
       },
       {
-        "label": "Day 2 · Abs & Cardio",
+        "label": "Day 2 \u00b7 Abs & Cardio",
         "exercises": [
           {
             "name": "Hand to Elbow Plank",
@@ -4594,10 +5128,56 @@ const SEED_WORKOUTS = [
             "sets": "4"
           }
         ],
-        "id": "d2"
+        "id": "d2",
+        "groups": [
+          {
+            "type": "cardio",
+            "label": "Cardio warmup",
+            "note": "5 min moderate pace"
+          },
+          {
+            "type": "straight",
+            "label": "Abs (break into sets as needed)",
+            "reps": "20 Plank \u00b7 50 Leg Raises",
+            "sets": 1,
+            "indices": [
+              0,
+              1
+            ]
+          },
+          {
+            "type": "cardio",
+            "label": "Steady-state cardio",
+            "note": "10 min at 70-80% MHR"
+          },
+          {
+            "type": "straight",
+            "label": "Abs",
+            "reps": "50 Bicycle \u00b7 40 Plank Rocks",
+            "sets": 1,
+            "indices": [
+              2,
+              3
+            ]
+          },
+          {
+            "type": "cardio",
+            "label": "Interval cardio",
+            "note": "10 intervals \u2014 30s all-out / 45s recovery"
+          },
+          {
+            "type": "straight",
+            "label": "Finisher",
+            "reps": "100 Oblique V Ups",
+            "sets": 1,
+            "indices": [
+              4
+            ]
+          }
+        ]
       },
       {
-        "label": "Day 3 · Upper",
+        "label": "Day 3 \u00b7 Upper",
         "exercises": [
           {
             "name": "Hand Release Push Ups",
@@ -4640,10 +5220,44 @@ const SEED_WORKOUTS = [
             "sets": "4"
           }
         ],
-        "id": "d3"
+        "id": "d3",
+        "groups": [
+          {
+            "type": "straight",
+            "label": "Upper \u2014 heavy compound",
+            "reps": "10 \u2192 12",
+            "sets": 4,
+            "indices": [
+              0
+            ]
+          },
+          {
+            "type": "straight",
+            "label": "Core",
+            "reps": "45s \u2192 1 min hold",
+            "sets": 4,
+            "indices": [
+              1
+            ]
+          },
+          {
+            "type": "straight",
+            "label": "Upper \u2014 remaining",
+            "reps": "10 \u2192 12",
+            "sets": 4,
+            "indices": [
+              2,
+              3,
+              4,
+              5,
+              6,
+              7
+            ]
+          }
+        ]
       },
       {
-        "label": "Day 4 · Lower",
+        "label": "Day 4 \u00b7 Lower",
         "exercises": [
           {
             "name": "Romanian Deadlift",
@@ -4681,10 +5295,43 @@ const SEED_WORKOUTS = [
             "sets": "4"
           }
         ],
-        "id": "d4"
+        "id": "d4",
+        "groups": [
+          {
+            "type": "straight",
+            "label": "Warmup: Romanian Deadlift",
+            "reps": "10 \u2192 12",
+            "sets": 4,
+            "indices": [
+              0
+            ]
+          },
+          {
+            "type": "straight",
+            "label": "Lower body",
+            "reps": "8 \u2192 12",
+            "sets": 4,
+            "indices": [
+              1,
+              2,
+              3,
+              4
+            ]
+          },
+          {
+            "type": "straight",
+            "label": "Abs",
+            "reps": "10 \u2192 12",
+            "sets": 4,
+            "indices": [
+              5,
+              6
+            ]
+          }
+        ]
       },
       {
-        "label": "Day 5 · Abs & Cardio",
+        "label": "Day 5 \u00b7 Abs & Cardio",
         "exercises": [
           {
             "name": "Stomach Vacuums",
@@ -4712,10 +5359,56 @@ const SEED_WORKOUTS = [
             "sets": "4"
           }
         ],
-        "id": "d5"
+        "id": "d5",
+        "groups": [
+          {
+            "type": "cardio",
+            "label": "Cardio warmup",
+            "note": "5 min moderate pace"
+          },
+          {
+            "type": "straight",
+            "label": "Abs",
+            "reps": "10 Vacuums \u00b7 50 Leg Raises",
+            "sets": 1,
+            "indices": [
+              0,
+              1
+            ]
+          },
+          {
+            "type": "cardio",
+            "label": "Steady-state cardio",
+            "note": "10 min at 70-80% MHR"
+          },
+          {
+            "type": "straight",
+            "label": "Circuit",
+            "reps": "20 KB Swings \u00b7 40 Heels to Heaven",
+            "sets": 1,
+            "indices": [
+              2,
+              3
+            ]
+          },
+          {
+            "type": "cardio",
+            "label": "Interval cardio",
+            "note": "10 intervals \u2014 30s all-out / 45s recovery"
+          },
+          {
+            "type": "straight",
+            "label": "Finisher",
+            "reps": "100 Ball Crunches",
+            "sets": 1,
+            "indices": [
+              4
+            ]
+          }
+        ]
       },
       {
-        "label": "Day 6 · Full Body",
+        "label": "Day 6 \u00b7 Full Body",
         "exercises": [
           {
             "name": "Dead - Curl - Press",
@@ -4748,7 +5441,31 @@ const SEED_WORKOUTS = [
             "sets": "4"
           }
         ],
-        "id": "d6"
+        "id": "d6",
+        "groups": [
+          {
+            "type": "straight",
+            "label": "Warmup: Dead-Curl-Press",
+            "reps": "10 \u2192 12",
+            "sets": 4,
+            "indices": [
+              0
+            ]
+          },
+          {
+            "type": "straight",
+            "label": "Full body",
+            "reps": "8 \u2192 12",
+            "sets": 4,
+            "indices": [
+              1,
+              2,
+              3,
+              4,
+              5
+            ]
+          }
+        ]
       }
     ]
   },
@@ -4757,7 +5474,7 @@ const SEED_WORKOUTS = [
     "name": "6-day Joint-Friendly",
     "days": [
       {
-        "label": "Day 1 · Lower + Abs",
+        "label": "Day 1 \u00b7 Lower + Abs",
         "exercises": [
           {
             "name": "Suitcase Squats",
@@ -4795,16 +5512,57 @@ const SEED_WORKOUTS = [
             "sets": "4"
           }
         ],
-        "id": "d1"
+        "id": "d1",
+        "groups": [
+          {
+            "type": "straight",
+            "label": "Starting Movement",
+            "reps": "10-12",
+            "sets": 4,
+            "indices": [
+              0
+            ]
+          },
+          {
+            "type": "superset",
+            "label": "Superset A",
+            "reps": "see per exercise",
+            "sets": 4,
+            "indices": [
+              1,
+              2
+            ]
+          },
+          {
+            "type": "superset",
+            "label": "Superset B",
+            "reps": "see per exercise",
+            "sets": 4,
+            "indices": [
+              3,
+              4
+            ]
+          },
+          {
+            "type": "superset",
+            "label": "Superset C",
+            "reps": "see per exercise",
+            "sets": 4,
+            "indices": [
+              5,
+              6
+            ]
+          }
+        ]
       },
       {
-        "label": "Day 2 · Rest & Recovery",
+        "label": "Day 2 \u00b7 Rest & Recovery",
         "rest": true,
         "exercises": [],
         "id": "d2"
       },
       {
-        "label": "Day 3 · Upper",
+        "label": "Day 3 \u00b7 Upper",
         "exercises": [
           {
             "name": "Overhead Shoulder Press",
@@ -4842,16 +5600,57 @@ const SEED_WORKOUTS = [
             "sets": "4"
           }
         ],
-        "id": "d3"
+        "id": "d3",
+        "groups": [
+          {
+            "type": "straight",
+            "label": "Starting Movement",
+            "reps": "8-10",
+            "sets": 4,
+            "indices": [
+              0
+            ]
+          },
+          {
+            "type": "superset",
+            "label": "Superset A",
+            "reps": "see per exercise",
+            "sets": 4,
+            "indices": [
+              1,
+              2
+            ]
+          },
+          {
+            "type": "superset",
+            "label": "Superset B",
+            "reps": "see per exercise",
+            "sets": 4,
+            "indices": [
+              3,
+              4
+            ]
+          },
+          {
+            "type": "superset",
+            "label": "Superset C",
+            "reps": "see per exercise",
+            "sets": 4,
+            "indices": [
+              5,
+              6
+            ]
+          }
+        ]
       },
       {
-        "label": "Day 4 · Rest & Recovery",
+        "label": "Day 4 \u00b7 Rest & Recovery",
         "rest": true,
         "exercises": [],
         "id": "d4"
       },
       {
-        "label": "Day 5 · Lower + Abs",
+        "label": "Day 5 \u00b7 Lower + Abs",
         "exercises": [
           {
             "name": "Back Squats",
@@ -4879,10 +5678,41 @@ const SEED_WORKOUTS = [
             "sets": "4"
           }
         ],
-        "id": "d5"
+        "id": "d5",
+        "groups": [
+          {
+            "type": "straight",
+            "label": "Starting Movement",
+            "reps": "10-12",
+            "sets": 4,
+            "indices": [
+              0
+            ]
+          },
+          {
+            "type": "superset",
+            "label": "Superset A",
+            "reps": "see per exercise",
+            "sets": 4,
+            "indices": [
+              1,
+              2
+            ]
+          },
+          {
+            "type": "superset",
+            "label": "Superset B",
+            "reps": "see per exercise",
+            "sets": 4,
+            "indices": [
+              3,
+              4
+            ]
+          }
+        ]
       },
       {
-        "label": "Day 6 · Upper",
+        "label": "Day 6 \u00b7 Upper",
         "exercises": [
           {
             "name": "Arnold Press",
@@ -4910,7 +5740,38 @@ const SEED_WORKOUTS = [
             "sets": "4"
           }
         ],
-        "id": "d6"
+        "id": "d6",
+        "groups": [
+          {
+            "type": "straight",
+            "label": "Starting Movement",
+            "reps": "10-12",
+            "sets": 4,
+            "indices": [
+              0
+            ]
+          },
+          {
+            "type": "superset",
+            "label": "Superset A",
+            "reps": "see per exercise",
+            "sets": 4,
+            "indices": [
+              1,
+              2
+            ]
+          },
+          {
+            "type": "superset",
+            "label": "Superset B",
+            "reps": "see per exercise",
+            "sets": 4,
+            "indices": [
+              3,
+              4
+            ]
+          }
+        ]
       }
     ]
   },
@@ -4919,7 +5780,7 @@ const SEED_WORKOUTS = [
     "name": "6-day Upper Focus + Legs",
     "days": [
       {
-        "label": "Day 1 · Glutes + Upper",
+        "label": "Day 1 \u00b7 Glutes + Upper",
         "exercises": [
           {
             "name": "Air Squats",
@@ -4962,10 +5823,57 @@ const SEED_WORKOUTS = [
             "sets": "4"
           }
         ],
-        "id": "d1"
+        "id": "d1",
+        "groups": [
+          {
+            "type": "superset",
+            "label": "Air Squats + Bicep Curls",
+            "reps": "10 \u2192 12",
+            "sets": 4,
+            "indices": [
+              0,
+              1
+            ]
+          },
+          {
+            "type": "superset",
+            "label": "Tricep Kickbacks + Glute Pulses",
+            "reps": "8 \u2192 10 \u00b7 10 \u2192 12",
+            "sets": 4,
+            "indices": [
+              2,
+              3
+            ]
+          },
+          {
+            "type": "cardio",
+            "label": "Cardio Point",
+            "note": "10 intervals \u2014 30s fast / 30s recovery"
+          },
+          {
+            "type": "superset",
+            "label": "Hammer Curls + Straight Leg Lifts",
+            "reps": "10 \u2192 12 \u00b7 12 \u2192 14",
+            "sets": 4,
+            "indices": [
+              4,
+              5
+            ]
+          },
+          {
+            "type": "superset",
+            "label": "Glute Bridge Pull Aparts + Calf Raises",
+            "reps": "8 \u2192 10 \u00b7 12 \u2192 14",
+            "sets": 4,
+            "indices": [
+              6,
+              7
+            ]
+          }
+        ]
       },
       {
-        "label": "Day 2 · Delts, Chest & Abs",
+        "label": "Day 2 \u00b7 Delts, Chest & Abs",
         "exercises": [
           {
             "name": "Lateral Raise Pulses",
@@ -5008,10 +5916,57 @@ const SEED_WORKOUTS = [
             "sets": "4"
           }
         ],
-        "id": "d2"
+        "id": "d2",
+        "groups": [
+          {
+            "type": "superset",
+            "label": "Lateral Raise Pulses + Incline Bench",
+            "reps": "14 \u2192 20 \u00b7 8 \u2192 10",
+            "sets": 4,
+            "indices": [
+              0,
+              1
+            ]
+          },
+          {
+            "type": "superset",
+            "label": "Delt Rotations + Star Crunches",
+            "reps": "8 \u2192 10 \u00b7 12 \u2192 14",
+            "sets": 4,
+            "indices": [
+              2,
+              3
+            ]
+          },
+          {
+            "type": "cardio",
+            "label": "Cardio Point",
+            "note": "10 intervals \u2014 20s fast / 40s recovery"
+          },
+          {
+            "type": "superset",
+            "label": "Incline Flye Pulses + Rear Delt Flyes",
+            "reps": "14 \u2192 20 \u00b7 10",
+            "sets": 4,
+            "indices": [
+              4,
+              5
+            ]
+          },
+          {
+            "type": "superset",
+            "label": "Delt Skier Kickbacks + Wall Pushups",
+            "reps": "10 \u2192 12 \u00b7 10",
+            "sets": 4,
+            "indices": [
+              6,
+              7
+            ]
+          }
+        ]
       },
       {
-        "label": "Day 3 · Legs & Abs",
+        "label": "Day 3 \u00b7 Legs & Abs",
         "exercises": [
           {
             "name": "Plie Squats",
@@ -5054,16 +6009,58 @@ const SEED_WORKOUTS = [
             "sets": "4"
           }
         ],
-        "id": "d3"
+        "id": "d3",
+        "groups": [
+          {
+            "type": "superset",
+            "label": "Plie Squats + Static Lunges",
+            "reps": "8 \u2192 10",
+            "sets": 4,
+            "indices": [
+              0,
+              1
+            ]
+          },
+          {
+            "type": "superset",
+            "label": "Wall Sit + X Band Walks",
+            "reps": "30s \u2192 40s hold \u00b7 10 \u2192 15",
+            "sets": 4,
+            "indices": [
+              2,
+              3
+            ]
+          },
+          {
+            "type": "superset",
+            "label": "Marching Glute Bridges + Ball Crunch",
+            "reps": "8 \u2192 10 \u00b7 10 \u2192 14",
+            "sets": 4,
+            "indices": [
+              4,
+              5
+            ]
+          },
+          {
+            "type": "superset",
+            "label": "Donkey Kicks + Side Bends",
+            "reps": "12 \u2192 14 \u00b7 10 \u2192 14",
+            "sets": 4,
+            "indices": [
+              6,
+              7
+            ]
+          }
+        ]
       },
       {
-        "label": "Day 4 · Rest & Recovery",
+        "label": "Day 4 \u00b7 Rest & Recovery",
         "rest": true,
         "exercises": [],
         "id": "d4"
       },
       {
-        "label": "Day 5 · Back & Delts",
+        "label": "Day 5 \u00b7 Back & Delts",
         "exercises": [
           {
             "name": "Lat Pulldowns",
@@ -5106,10 +6103,57 @@ const SEED_WORKOUTS = [
             "sets": "4"
           }
         ],
-        "id": "d5"
+        "id": "d5",
+        "groups": [
+          {
+            "type": "superset",
+            "label": "Lat Pulldowns + DB Halos",
+            "reps": "8 \u2192 10",
+            "sets": 4,
+            "indices": [
+              0,
+              1
+            ]
+          },
+          {
+            "type": "superset",
+            "label": "Front Raises + Bent Over Rows",
+            "reps": "8 \u2192 10",
+            "sets": 4,
+            "indices": [
+              2,
+              3
+            ]
+          },
+          {
+            "type": "cardio",
+            "label": "Cardio Point",
+            "note": "15 min your choice \u2014 heart rate 80-90% MHR"
+          },
+          {
+            "type": "superset",
+            "label": "Arnold Press + Scapular Retractions",
+            "reps": "8 \u2192 10 \u00b7 10 \u2192 12",
+            "sets": 4,
+            "indices": [
+              4,
+              5
+            ]
+          },
+          {
+            "type": "superset",
+            "label": "Lateral Raises + Pull Overs",
+            "reps": "8 \u2192 10",
+            "sets": 4,
+            "indices": [
+              6,
+              7
+            ]
+          }
+        ]
       },
       {
-        "label": "Day 6 · Rest & Recovery",
+        "label": "Day 6 \u00b7 Rest & Recovery",
         "rest": true,
         "exercises": [],
         "id": "d6"
