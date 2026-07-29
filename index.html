@@ -185,6 +185,15 @@ details.have summary::-webkit-details-marker{display:none}
 .wt-last:hover{background:var(--accent-bg);color:var(--accent-d)}
 .wt-up{color:var(--good);font-weight:800;font-size:11px}
 .wt-dn{color:var(--bad);font-weight:800;font-size:11px}
+.grp-head{padding:10px 4px 6px 14px;margin-top:8px;border-top:1px solid var(--line)}
+.grp-head:first-of-type{border-top:none;margin-top:0}
+.grp-title{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:700;color:var(--ink)}
+.grp-badge{font-size:9px;font-weight:800;letter-spacing:1px;padding:2px 7px;border-radius:10px;color:#fff}
+.grp-badge.circuit{background:var(--warn)}
+.grp-badge.super{background:var(--fat)}
+.grp-badge.straight{background:var(--accent-d)}
+.grp-meta{font-size:12px;color:var(--ink2);font-weight:600;margin-top:2px}
+.grp-note{font-size:12px;color:var(--ink2);font-style:italic;margin-top:5px;background:var(--bg2);padding:6px 10px;border-radius:6px}
 .rest{padding:14px;text-align:center;color:var(--ink3);font-style:italic;font-size:13px}
 .act{display:flex;align-items:center;gap:10px;padding:10px 2px;border-bottom:1px solid var(--line)}
 .act:last-child{border-bottom:none}
@@ -3603,7 +3612,63 @@ const SEED_WORKOUTS = [
             "sets": "4"
           }
         ],
-        "id": "d1"
+        "id": "d1",
+        "groups": [
+          {
+            "type": "straight",
+            "label": "Warmup: Push Press",
+            "reps": "15, 10, 5, 5 (wk 1-2) → 20, 20, 10, 10 (wk 3-4)",
+            "sets": 4,
+            "indices": [
+              0
+            ]
+          },
+          {
+            "type": "superset",
+            "label": "Pulldowns + Dips",
+            "reps": "8 → 10",
+            "sets": 4,
+            "indices": [
+              1,
+              2
+            ]
+          },
+          {
+            "type": "superset",
+            "label": "OH Press + Retractions",
+            "reps": "8 → 10 · 10 → 12",
+            "sets": 4,
+            "indices": [
+              3,
+              4
+            ]
+          },
+          {
+            "type": "superset",
+            "label": "Flyes + Pullovers",
+            "reps": "8 → 10 · 10",
+            "sets": 4,
+            "indices": [
+              5,
+              6
+            ]
+          },
+          {
+            "type": "superset",
+            "label": "Curls + Extensions",
+            "reps": "8 → 10 · 10",
+            "sets": 4,
+            "indices": [
+              7,
+              8
+            ]
+          },
+          {
+            "type": "cardio",
+            "label": "Post-workout cardio",
+            "note": "15 intervals — 15s all-out / 30s recovery"
+          }
+        ]
       },
       {
         "label": "Day 2 · Lower + Abs",
@@ -3654,7 +3719,63 @@ const SEED_WORKOUTS = [
             "sets": "4"
           }
         ],
-        "id": "d2"
+        "id": "d2",
+        "groups": [
+          {
+            "type": "straight",
+            "label": "Warmup: Back Squats",
+            "reps": "15, 10, 5, 5 → 20, 20, 10, 10",
+            "sets": 4,
+            "indices": [
+              0
+            ]
+          },
+          {
+            "type": "superset",
+            "label": "Deadlifts + Bicycle Crunches",
+            "reps": "8 → 10",
+            "sets": 4,
+            "indices": [
+              1,
+              2
+            ]
+          },
+          {
+            "type": "superset",
+            "label": "Plank Cross-overs + Side Bends",
+            "reps": "8 → 10 · 12 → 14",
+            "sets": 4,
+            "indices": [
+              3,
+              4
+            ]
+          },
+          {
+            "type": "superset",
+            "label": "Single-leg DL + Russian Twists",
+            "reps": "8 → 10 · 10",
+            "sets": 4,
+            "indices": [
+              5,
+              6
+            ]
+          },
+          {
+            "type": "superset",
+            "label": "KB Swings + Donkey Kicks",
+            "reps": "8 → 10 · 10",
+            "sets": 4,
+            "indices": [
+              7,
+              8
+            ]
+          },
+          {
+            "type": "cardio",
+            "label": "Post-workout cardio",
+            "note": "10 intervals — 40s all-out / 30s recovery"
+          }
+        ]
       },
       {
         "label": "Day 3 · Upper",
@@ -3705,7 +3826,63 @@ const SEED_WORKOUTS = [
             "sets": "4"
           }
         ],
-        "id": "d3"
+        "id": "d3",
+        "groups": [
+          {
+            "type": "straight",
+            "label": "Warmup: Thrusters",
+            "reps": "15, 10, 5, 5 → 20, 20, 10, 10",
+            "sets": 4,
+            "indices": [
+              0
+            ]
+          },
+          {
+            "type": "superset",
+            "label": "Hammer Curls + Arnold Press",
+            "reps": "8 → 10",
+            "sets": 4,
+            "indices": [
+              1,
+              2
+            ]
+          },
+          {
+            "type": "superset",
+            "label": "Rows + Halos",
+            "reps": "8 → 10 · 12 → 14",
+            "sets": 4,
+            "indices": [
+              3,
+              4
+            ]
+          },
+          {
+            "type": "superset",
+            "label": "Lateral Raises + Tricep Ext",
+            "reps": "8 → 10 · 10",
+            "sets": 4,
+            "indices": [
+              5,
+              6
+            ]
+          },
+          {
+            "type": "superset",
+            "label": "Pull-ups + Wood Choppers",
+            "reps": "8 → 10",
+            "sets": 4,
+            "indices": [
+              7,
+              8
+            ]
+          },
+          {
+            "type": "cardio",
+            "label": "Post-workout cardio",
+            "note": "15 min steady-state, your choice"
+          }
+        ]
       },
       {
         "label": "Day 4 · Lower + Abs",
@@ -3756,7 +3933,63 @@ const SEED_WORKOUTS = [
             "sets": "4"
           }
         ],
-        "id": "d4"
+        "id": "d4",
+        "groups": [
+          {
+            "type": "straight",
+            "label": "Warmup: Romanian Deadlift",
+            "reps": "10, 10, 5, 5 → 12, 10, 5, 5",
+            "sets": 4,
+            "indices": [
+              0
+            ]
+          },
+          {
+            "type": "superset",
+            "label": "Ball Passes + Hamstring Curls",
+            "reps": "8 → 10",
+            "sets": 4,
+            "indices": [
+              1,
+              2
+            ]
+          },
+          {
+            "type": "superset",
+            "label": "X Band Walks + Plie Squats",
+            "reps": "8 → 10 · 12 → 14",
+            "sets": 4,
+            "indices": [
+              3,
+              4
+            ]
+          },
+          {
+            "type": "superset",
+            "label": "Hip Thrusts + Alt Lunges",
+            "reps": "8 → 10 · 10",
+            "sets": 4,
+            "indices": [
+              5,
+              6
+            ]
+          },
+          {
+            "type": "superset",
+            "label": "Leg Press + Butterfly Situps",
+            "reps": "8 → 10 · 10",
+            "sets": 4,
+            "indices": [
+              7,
+              8
+            ]
+          },
+          {
+            "type": "cardio",
+            "label": "Post-workout cardio",
+            "note": "15 intervals — 15s all-out / 30s recovery"
+          }
+        ]
       }
     ]
   },
@@ -3984,7 +4217,44 @@ const SEED_WORKOUTS = [
             "sets": "4"
           }
         ],
-        "id": "d1"
+        "id": "d1",
+        "groups": [
+          {
+            "type": "straight",
+            "label": "Glute Activation",
+            "reps": "12",
+            "sets": 4,
+            "note": "Take these movements slowly and feel your glutes activating throughout. Use the heaviest weights you safely can.",
+            "indices": [
+              0,
+              1,
+              2,
+              3
+            ]
+          },
+          {
+            "type": "straight",
+            "label": "Legs",
+            "reps": "8 → 10 → 12 (wk 1-2 / 3 / 4)",
+            "sets": 4,
+            "indices": [
+              4,
+              5
+            ]
+          },
+          {
+            "type": "circuit",
+            "label": "Abs",
+            "reps": "10, 10, 8, 8",
+            "rounds": 4,
+            "rest": "30 sec",
+            "indices": [
+              6,
+              7,
+              8
+            ]
+          }
+        ]
       },
       {
         "label": "Day 2 · Rest & Recovery",
@@ -4036,7 +4306,49 @@ const SEED_WORKOUTS = [
             "sets": "4"
           }
         ],
-        "id": "d3"
+        "id": "d3",
+        "groups": [
+          {
+            "type": "straight",
+            "label": "Back",
+            "reps": "8 → 10 → 12",
+            "sets": 4,
+            "indices": [
+              0,
+              1
+            ]
+          },
+          {
+            "type": "straight",
+            "label": "Delts",
+            "reps": "8 → 10 → 12",
+            "sets": 4,
+            "indices": [
+              2,
+              3
+            ]
+          },
+          {
+            "type": "straight",
+            "label": "Biceps",
+            "reps": "12",
+            "sets": 4,
+            "indices": [
+              4,
+              5
+            ]
+          },
+          {
+            "type": "straight",
+            "label": "Triceps",
+            "reps": "8",
+            "sets": 4,
+            "indices": [
+              6,
+              7
+            ]
+          }
+        ]
       },
       {
         "label": "Day 4 · Legs + Abs",
@@ -4087,7 +4399,43 @@ const SEED_WORKOUTS = [
             "sets": "4"
           }
         ],
-        "id": "d4"
+        "id": "d4",
+        "groups": [
+          {
+            "type": "straight",
+            "label": "Legs",
+            "reps": "8",
+            "sets": 4,
+            "indices": [
+              0,
+              1,
+              2
+            ]
+          },
+          {
+            "type": "straight",
+            "label": "Glutes",
+            "reps": "12",
+            "sets": 4,
+            "indices": [
+              3,
+              4,
+              5
+            ]
+          },
+          {
+            "type": "circuit",
+            "label": "Abs",
+            "reps": "10, 10, 8, 8",
+            "rounds": 4,
+            "rest": "30 sec",
+            "indices": [
+              6,
+              7,
+              8
+            ]
+          }
+        ]
       },
       {
         "label": "Day 5 · Full Body",
@@ -4134,7 +4482,36 @@ const SEED_WORKOUTS = [
           }
         ],
         "id": "d5",
-        "cardio": "Mid-workout cardio: 10 min intervals — 30s all-out / 30s easy ×10"
+        "groups": [
+          {
+            "type": "straight",
+            "label": "Full Body",
+            "reps": "6 → 8 → 8",
+            "sets": 4,
+            "indices": [
+              0,
+              1,
+              2,
+              3
+            ]
+          },
+          {
+            "type": "cardio",
+            "label": "Mid-workout cardio",
+            "note": "10 min intervals — 30s all-out / 30s recovery ×10"
+          },
+          {
+            "type": "straight",
+            "reps": "8",
+            "sets": 4,
+            "indices": [
+              4,
+              5,
+              6,
+              7
+            ]
+          }
+        ]
       }
     ]
   },
@@ -5474,30 +5851,60 @@ function renderTrain(){
     } else {
       main+=`<div class="warmup">🤸 Warm-up: 5 min + 5–10 min stretching the muscles you'll train</div>`;
     }
-    const isCircuit=/circuit/i.test(d.label);
-    const unitLetter=isCircuit?'R':'S'; // R=rounds, S=sets (visual is same, aria-label differs)
-    d.exercises.forEach((ex,exIdx)=>{
+    const dayIsCircuit=/circuit/i.test(d.label);
+    // helper that renders one exercise row; hideReps=true when the enclosing group's header already shows reps
+    const renderExRow=(ex, exIdx, groupIsCircuit, hideReps)=>{
       const n=parseInt(ex.sets)||4;
       const done=(S.setLog&&S.setLog[wk]&&S.setLog[wk][d.id]&&S.setLog[wk][d.id][exIdx])||[];
+      const unit=(groupIsCircuit||dayIsCircuit)?'R':'S';
       const boxes=Array.from({length:n},(_,si)=>{
         const on=done[si]?' on':'';
-        return `<span class="set-box${on}" onclick="toggleSet('${d.id}',${exIdx},${si})" aria-label="${unitLetter}${si+1}" title="${isCircuit?'Round':'Set'} ${si+1}"></span>`;
+        return `<span class="set-box${on}" onclick="toggleSet('${d.id}',${exIdx},${si})" aria-label="${unit}${si+1}" title="${(groupIsCircuit||dayIsCircuit)?'Round':'Set'} ${si+1}"></span>`;
       }).join('');
       const nameSafe=esc(ex.name).replace(/'/g,"\\'");
       const curW=getCurrentWeight(ex.name);
       const lastW=getLastWeight(ex.name);
       const arrow=curW!=null && lastW ? (curW>lastW.w?' <span class="wt-up">▲</span>':(curW<lastW.w?' <span class="wt-dn">▼</span>':'')) : '';
       const lastPill = lastW ? `<span class="wt-last" onclick="showWeightHistory('${nameSafe}')" title="Tap for history">📈 ${lastW.w} lb</span>` : '';
-      main+=`<div class="ex"${sw?' style="opacity:.45"':''}>
+      const srSpan = hideReps ? '' : `<span class="sr">${ex.sets?esc(ex.sets)+' × ':''}${esc(ex.reps)} reps</span>`;
+      return `<div class="ex"${sw?' style="opacity:.45"':''}>
         <a href="#" onclick="event.preventDefault();openExercise('${nameSafe}')">${esc(ex.name)}</a>
-        <span class="sr">${ex.sets?esc(ex.sets)+' × ':''}${esc(ex.reps)} reps</span>
+        ${srSpan}
         <span class="wt-wrap">
           <input class="wt-inp" type="number" inputmode="decimal" step="0.5" value="${curW??''}" placeholder="lb" onchange="setWeight('${nameSafe}',this.value)" title="Weight today">${arrow}
           ${lastPill}
         </span>
         <span class="set-boxes">${boxes}</span>
       </div>`;
-    });
+    };
+
+    if(d.groups && d.groups.length){
+      // Grouped render: header per group + exercise rows without redundant reps
+      d.groups.forEach(g=>{
+        if(g.type==='cardio'){
+          main+=`<div class="cardio">🔥 ${esc(g.label||'Mid-workout cardio')}${g.note?': '+esc(g.note):''}</div>`;
+          return;
+        }
+        const isC=g.type==='circuit';
+        const setsPart=isC?`${g.rounds||4} rounds`:`${g.sets||4} sets`;
+        const restPart=g.rest?` · rest ${esc(g.rest)}`:'';
+        const label=esc(g.label||(isC?'Circuit':'Straight Sets'));
+        const badge=isC?'<span class="grp-badge circuit">CIRCUIT</span>':(g.type==='superset'?'<span class="grp-badge super">SUPERSET</span>':'<span class="grp-badge straight">STRAIGHT</span>');
+        main+=`<div class="grp-head">
+          <div class="grp-title">${badge} ${label}</div>
+          <div class="grp-meta">${setsPart} · ${esc(g.reps||'')} reps${restPart}</div>
+          ${g.note?`<div class="grp-note">💡 ${esc(g.note)}</div>`:''}
+        </div>`;
+        (g.indices||[]).forEach(exIdx=>{
+          if(d.exercises[exIdx]) main+=renderExRow(d.exercises[exIdx], exIdx, isC, true);
+        });
+      });
+    } else {
+      // Legacy flat render (no groups defined for this day yet)
+      d.exercises.forEach((ex,exIdx)=>{
+        main+=renderExRow(ex, exIdx, dayIsCircuit, false);
+      });
+    }
     if(d.cardio&&!sw) main+=`<div class="cardio">🔥 ${esc(d.cardio)}</div>`;
     main+=`</div></div>`;
   });
