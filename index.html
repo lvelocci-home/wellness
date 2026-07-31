@@ -153,6 +153,9 @@ details.have summary::-webkit-details-marker{display:none}
 .reveal-btn:hover{opacity:1;background:var(--bg2)}
 .swap-line{font-size:13px;font-weight:600;color:var(--blue);background:var(--blue-bg);border-radius:8px;padding:8px 12px;margin:6px 0 4px;display:flex;align-items:center;gap:6px}
 .swap-line .sw-rm{margin-left:auto;cursor:pointer;color:var(--blue);font-size:18px;line-height:1;padding:0 4px}
+.skip-line{font-size:13px;color:var(--ink3);padding:8px 4px;border-top:1px dashed var(--line);display:flex;align-items:center;gap:6px}
+.skip-line b{font-weight:600;text-decoration:line-through}
+.skip-line .sk-rs{margin-left:auto;cursor:pointer;color:var(--accent-d);font-weight:700}
 .cardio{font-size:13px;font-weight:600;color:var(--warn);padding:11px 4px 2px 14px;margin-top:4px;border-top:1px dashed var(--line)}
 .split{display:grid;grid-template-columns:2fr 1fr;gap:14px;align-items:start}
 .split .col-side .card:first-child{margin-top:0}
@@ -6683,7 +6686,9 @@ function go(pg){
 function renderHome(){
   const p=curPlan(), tg=p.target, today=todayISO(), tot=dayTotals(today);
   const calPct=tg.cal?Math.min(100,Math.round(tot.cal/tg.cal*100)):0;
-  const mealsEaten=Object.keys((S.foodLog[today]||{mealsEaten:{}}).mealsEaten).length;
+  const todayLog=S.foodLog[today]||{};
+  const mealsEaten=Object.keys(todayLog.mealsEaten||{}).length;
+  const mealsPlanned=p.meals.filter(m=>!isSkipped(todayLog,m.id)).length;
   const wk=weekKey(), wlog=S.trainingLog[wk]||{};
   const tDays=curWorkout().days.filter(d=>!d.rest), tDone=tDays.filter(d=>wlog[d.id]).length;
   const run=S.groceryRun, pantrySet=new Set(S.pantry.map(x=>x.toLowerCase()));
@@ -6718,7 +6723,7 @@ function renderHome(){
     <div class="dbody"><div class="dlabel">Nutrition</div>
       <div class="dstat">${round(tot.cal)} <small>/ ${tg.cal} cal</small></div>
       <div class="dbar"><i style="width:${calPct}%;background:var(--cal)"></i></div>
-      <div class="dsub">${mealsEaten}/${p.meals.length} meals · ${round(tot.p)}P / ${round(tot.c)}C / ${round(tot.f)}F</div>
+      <div class="dsub">${mealsEaten}/${mealsPlanned} meals · ${round(tot.p)}P / ${round(tot.c)}C / ${round(tot.f)}F</div>
     </div><div class="dchev">›</div></div>`;
 
   const medToday=!!(S.meditation&&S.meditation[today]);
@@ -6977,7 +6982,8 @@ function renderFood(){
   }
 
   main+=`<div class="card"><div class="row"><h2 style="margin:0;flex:1">Plan meals${isToday?' · today':''}</h2><button class="btn ghost" style="padding:2px 4px;font-size:12px" onclick="toggleAllMeals()">${p.meals.every(m=>foodExp.has(m.id))?'Hide recipes':'Show recipes'}</button></div>`;
-  p.meals.forEach(m=>{
+  const skipped=p.meals.filter(m=>isSkipped(lg,m.id));
+  p.meals.filter(m=>!isSkipped(lg,m.id)).forEach(m=>{
     const eatenVal=lg.mealsEaten[m.id], eaten=eatenVal?'eaten':'', sw=mealSwap(eatenVal);
     const mm=slotMacros(m,eatenVal), planMM=mealMacros(m), exp=foodExp.has(m.id);
     const timeLabel=fmtHM(mealTime(eatenVal));
@@ -6987,9 +6993,14 @@ function renderFood(){
       <div class="mn" onclick="toggleMeal('${m.id}')"><b>${title}</b><div class="mm">${mm.cal} cal · ${mm.p}P / ${mm.c}C / ${mm.f}F${timeLabel?' · <span class="meal-time" onclick="event.stopPropagation();editMealTime(\''+m.id+'\')">🕐 '+timeLabel+'</span>':eaten?' · <span class="meal-time" onclick="event.stopPropagation();editMealTime(\''+m.id+'\')">set time</span>':''}</div></div>
       <button class="mealinfo" onclick="swapMealModal('${m.id}')" title="Swap in something else">⇄</button>
       <button class="mealinfo" onclick="toggleMealInfo('${m.id}')" title="Ingredients">${exp?'▲':'▼'}</button>
+      <button class="mealinfo" onclick="skipMeal('${m.id}')" title="Skip this meal">×</button>
     </div>
     ${sw?`<div class="swap-line">🔄 Instead of <b>${esc(m.name)}</b> · ${planMM.cal}→${mm.cal} cal <span class="sw-rm" onclick="clearMealSwap('${m.id}')">×</span></div>`:''}
     ${exp&&!sw&&m.items?`<div class="mealings">${m.items.map(it=>`<div class="ming"><span class="mq">${esc(it.q||'—')}</span><span>${esc(it.f)}</span></div>`).join('')}</div>`:''}`;
+  });
+  if(!p.meals.length||skipped.length===p.meals.length) main+=`<div class="tiny" style="padding:6px 2px">Every meal skipped for this day.</div>`;
+  skipped.forEach(m=>{
+    main+=`<div class="skip-line">⤫ Skipped <b>${esc(m.name)}</b> · ${mealMacros(m).cal} cal <span class="sk-rs" onclick="unskipMeal('${m.id}')">Restore</span></div>`;
   });
   main+='</div>';
 
@@ -7055,6 +7066,23 @@ function applyMealSwap(slotId, food){
 function clearMealSwap(slotId){
   const me=dayLog(foodDate).mealsEaten, v=me[slotId]; if(!mealSwap(v))return;
   me[slotId]=mealTime(v)||'12:00'; save(); renderFood(); toast('Restored plan meal');
+}
+/* Skipping is per-day and lives on the day log, so it syncs with everything else
+   and never touches SEED_PLANS (which is rebuilt from code on every load). */
+function isSkipped(lg,id){ return !!(lg.skipped&&lg.skipped[id]); }
+function skipMeal(id){
+  const lg=dayLog(foodDate), v=lg.mealsEaten[id], sw=mealSwap(v);
+  // Only nag when skipping would actually throw away something already logged.
+  if(v&&!confirm(sw?`Skip this meal? "${sw.name}" was swapped in and will be removed from the day.`
+                    :'You marked this meal as eaten. Skip it anyway and un-log it?')) return;
+  if(!lg.skipped)lg.skipped={};
+  lg.skipped[id]=1; delete lg.mealsEaten[id];   // skipped means not eaten
+  save(); renderFood(); toast('Skipped for '+(foodDate===todayISO()?'today':fmtDate(foodDate)));
+}
+function unskipMeal(id){
+  const lg=dayLog(foodDate); if(!lg.skipped)return;
+  delete lg.skipped[id]; if(!Object.keys(lg.skipped).length)delete lg.skipped;
+  save(); renderFood();
 }
 function editMealTime(id){
   const lg=dayLog(foodDate); const cur=mealTime(lg.mealsEaten[id])||nowHM();
