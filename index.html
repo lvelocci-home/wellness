@@ -3041,6 +3041,356 @@ const SEED_PLANS = [
 
 const SEED_WORKOUTS = [
   {
+    "id": "w_travel",
+    "name": "2-Week Travel Plan",
+    "days": [
+      {
+        "id": "d1",
+        "label": "Day 1 \u00b7 Lower + Abs",
+        "exercises": [
+          {
+            "name": "Goblet Squats",
+            "reps": "12",
+            "sets": "4"
+          },
+          {
+            "name": "Single Leg DB or KB Deadlifts",
+            "reps": "10 ea",
+            "sets": "3"
+          },
+          {
+            "name": "Heels to Heaven",
+            "reps": "12",
+            "sets": "3"
+          },
+          {
+            "name": "Static Lunges",
+            "reps": "10 ea",
+            "sets": "3"
+          },
+          {
+            "name": "Russian Twists",
+            "reps": "20",
+            "sets": "3"
+          },
+          {
+            "name": "Standing Glute Kickbacks",
+            "reps": "15 ea",
+            "sets": "3"
+          },
+          {
+            "name": "Butterfly Situps",
+            "reps": "15",
+            "sets": "3"
+          }
+        ],
+        "groups": [
+          {
+            "type": "straight",
+            "label": "Big Movement",
+            "reps": "12",
+            "sets": 4,
+            "indices": [
+              0
+            ],
+            "note": "Kettlebell held at the chest. Week 2: add 2 reps to every superset, lower for a 3-count on the big movement, and cut rest to 30 seconds."
+          },
+          {
+            "type": "superset",
+            "label": "Superset A",
+            "reps": "see per exercise",
+            "sets": 3,
+            "indices": [
+              1,
+              2
+            ]
+          },
+          {
+            "type": "superset",
+            "label": "Superset B",
+            "reps": "see per exercise",
+            "sets": 3,
+            "indices": [
+              3,
+              4
+            ]
+          },
+          {
+            "type": "superset",
+            "label": "Superset C",
+            "reps": "see per exercise",
+            "sets": 3,
+            "indices": [
+              5,
+              6
+            ],
+            "note": "Band above the knees."
+          }
+        ]
+      },
+      {
+        "id": "d2",
+        "label": "Day 2 \u00b7 Upper + Abs",
+        "exercises": [
+          {
+            "name": "Overhead Shoulder Press",
+            "reps": "10",
+            "sets": "4"
+          },
+          {
+            "name": "Single Arm Dumbbell Rows",
+            "reps": "10 ea",
+            "sets": "3"
+          },
+          {
+            "name": "Band Pull Aparts",
+            "reps": "15",
+            "sets": "3"
+          },
+          {
+            "name": "Lateral Raises",
+            "reps": "12",
+            "sets": "3"
+          },
+          {
+            "name": "Hammer Curls",
+            "reps": "10",
+            "sets": "3"
+          },
+          {
+            "name": "Overhead Tricep Extension",
+            "reps": "12",
+            "sets": "3"
+          },
+          {
+            "name": "Side Plank Pulses",
+            "reps": "12 ea",
+            "sets": "3"
+          }
+        ],
+        "groups": [
+          {
+            "type": "straight",
+            "label": "Big Movement",
+            "reps": "10",
+            "sets": 4,
+            "indices": [
+              0
+            ],
+            "note": "Week 2: add 2 reps to every superset, lower for a 3-count on the big movement, and cut rest to 30 seconds."
+          },
+          {
+            "type": "superset",
+            "label": "Superset A",
+            "reps": "see per exercise",
+            "sets": 3,
+            "indices": [
+              1,
+              2
+            ],
+            "note": "Rows hinged over \u2014 no bench needed."
+          },
+          {
+            "type": "superset",
+            "label": "Superset B",
+            "reps": "see per exercise",
+            "sets": 3,
+            "indices": [
+              3,
+              4
+            ]
+          },
+          {
+            "type": "superset",
+            "label": "Superset C",
+            "reps": "see per exercise",
+            "sets": 3,
+            "indices": [
+              5,
+              6
+            ]
+          }
+        ]
+      },
+      {
+        "id": "d3",
+        "label": "Day 3 \u00b7 Full Body Kettlebell Circuit",
+        "exercises": [
+          {
+            "name": "Kettlebell Swings",
+            "reps": "20",
+            "sets": "4"
+          },
+          {
+            "name": "Dumbbell Thrusters",
+            "reps": "10",
+            "sets": "4"
+          },
+          {
+            "name": "Walking Lunges",
+            "reps": "10 ea",
+            "sets": "4"
+          },
+          {
+            "name": "Plank Hold",
+            "reps": "30s",
+            "sets": "4"
+          },
+          {
+            "name": "Sumo Deadlift High Pull",
+            "reps": "12",
+            "sets": "3"
+          },
+          {
+            "name": "Halo Exercise",
+            "reps": "8 ea",
+            "sets": "3"
+          },
+          {
+            "name": "Wood Choppers",
+            "reps": "10 ea",
+            "sets": "3"
+          },
+          {
+            "name": "Flutterkicks",
+            "reps": "20",
+            "sets": "3"
+          }
+        ],
+        "groups": [
+          {
+            "type": "circuit",
+            "label": "Circuit 1",
+            "reps": "see per exercise",
+            "rounds": 4,
+            "indices": [
+              0,
+              1,
+              2,
+              3
+            ],
+            "note": "Move straight through. Short on floor space? Swap Walking Lunges for Alternating Lunges in place."
+          },
+          {
+            "type": "cardio",
+            "label": "Rest",
+            "note": "90 seconds between circuits"
+          },
+          {
+            "type": "circuit",
+            "label": "Circuit 2",
+            "reps": "see per exercise",
+            "rounds": 3,
+            "indices": [
+              4,
+              5,
+              6,
+              7
+            ]
+          }
+        ]
+      },
+      {
+        "id": "d4",
+        "label": "Day 4 \u00b7 Glutes + Shoulders",
+        "exercises": [
+          {
+            "name": "Plie Squats",
+            "reps": "15",
+            "sets": "4"
+          },
+          {
+            "name": "Glute Bridge Pull Aparts",
+            "reps": "15",
+            "sets": "3"
+          },
+          {
+            "name": "Clam Shells",
+            "reps": "15 ea",
+            "sets": "3"
+          },
+          {
+            "name": "X Band Walks",
+            "reps": "15 ea",
+            "sets": "3"
+          },
+          {
+            "name": "Push Press",
+            "reps": "10",
+            "sets": "3"
+          },
+          {
+            "name": "Pike Pushups",
+            "reps": "8",
+            "sets": "3"
+          },
+          {
+            "name": "Superman Holds",
+            "reps": "15",
+            "sets": "3"
+          },
+          {
+            "name": "Bird Dog Crunches",
+            "reps": "12 ea",
+            "sets": "2"
+          }
+        ],
+        "groups": [
+          {
+            "type": "straight",
+            "label": "Big Movement",
+            "reps": "15",
+            "sets": 4,
+            "indices": [
+              0
+            ],
+            "note": "Kettlebell held between the legs. Week 2: add 2 reps to every superset, lower for a 3-count on the big movement, and cut rest to 30 seconds."
+          },
+          {
+            "type": "superset",
+            "label": "Superset A",
+            "reps": "see per exercise",
+            "sets": 3,
+            "indices": [
+              1,
+              2
+            ],
+            "note": "Band above the knees for both."
+          },
+          {
+            "type": "superset",
+            "label": "Superset B",
+            "reps": "see per exercise",
+            "sets": 3,
+            "indices": [
+              3,
+              4
+            ]
+          },
+          {
+            "type": "superset",
+            "label": "Superset C",
+            "reps": "see per exercise",
+            "sets": 3,
+            "indices": [
+              5,
+              6
+            ]
+          },
+          {
+            "type": "straight",
+            "label": "Finisher",
+            "reps": "12 ea",
+            "sets": 2,
+            "indices": [
+              7
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
     "id": "w_oct20",
     "name": "3-day Endurance Circuit",
     "days": [
