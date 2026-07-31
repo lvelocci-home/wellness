@@ -12,7 +12,7 @@
   --ink:#16242f; --ink2:#56697a; --ink3:#90a2b1;
   --accent:#0eb39a; --accent-d:#0a8f7c; --accent-bg:#e2f6f2;
   --blue:#2f78d6; --blue-bg:#e6f0fb;
-  --cal:#0eb39a; --pro:#2bb673; --carb:#f0a821; --fat:#8b6cf0;
+  --cal:#0eb39a; --pro:#2bb673; --carb:#f0a821; --fat:#8b6cf0; --fiber:#c2703d;
   --good:#2bb673; --warn:#e8833a; --bad:#e0566b;
   --radius:16px; --radius-sm:10px; --nav-h:62px;
   --shadow:0 1px 3px rgba(20,36,47,.06),0 4px 16px rgba(20,36,47,.06);
@@ -116,7 +116,7 @@ details.have summary{cursor:pointer;font-size:13px;font-weight:700;color:var(--i
 details.have summary::-webkit-details-marker{display:none}
 
 /* Macro rings */
-.rings{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;text-align:center}
+.rings{display:grid;grid-template-columns:repeat(5,1fr);gap:4px;text-align:center}
 .ring{position:relative;width:100%;max-width:88px;margin:0 auto}
 .ring svg{width:100%;height:auto;transform:rotate(-90deg)}
 .ring .rv{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
@@ -144,6 +144,10 @@ details.have summary::-webkit-details-marker{display:none}
 .recipe-ings{margin-top:10px;border-top:1px dashed var(--line);padding-top:6px}
 .recipe-ings .ming{padding:3px 0;border-bottom:none}
 .warmup{font-size:12px;color:var(--ink2);font-style:italic;padding:4px 4px 9px 14px;border-bottom:1px solid var(--line);margin-bottom:4px}
+.added-tag{font-size:9px;font-weight:800;letter-spacing:.5px;text-transform:uppercase;color:var(--accent-d);background:var(--accent-bg);padding:2px 5px;border-radius:5px;vertical-align:middle}
+.fib-chip{color:var(--fiber);font-weight:600;cursor:pointer;padding:1px 4px;border-radius:4px;white-space:nowrap}
+.fib-chip.est{border-bottom:1px dotted var(--fiber)}
+.fib-chip:hover{background:rgba(194,112,61,.12)}
 .meal-time{color:var(--accent-d);font-weight:600;cursor:pointer;padding:1px 4px;border-radius:4px;white-space:nowrap}
 .meal-time:hover{background:var(--accent-bg)}
 .if-card h2{margin-bottom:8px}
@@ -6528,9 +6532,64 @@ function defaultState(){
     // personal (local-only)
     foodLog:{}, trainingLog:{}, checkins:[], activities:[], strava:{workerUrl:"",token:"",lastSync:0},
     cloud:{url:"",token:"",lastSync:0}, shareToken:"", notes:{},
-    vision:"", focus:{}, water:{}, profileName:"", waterGoal:126, meditation:{}, setLog:{}, exerciseVideos:{}, weightLog:{}
+    vision:"", focus:{}, water:{}, profileName:"", waterGoal:126, fiberGoal:30, mealFiber:{}, meditation:{}, setLog:{}, exerciseVideos:{}, weightLog:{}
   };
 }
+const round=(n,d=0)=>{const f=10**d;return Math.round(n*f)/f;};
+/* Grams of fiber per plan ingredient, keyed "name|quantity" exactly as it appears
+   in SEED_PLANS. These are ESTIMATES from standard nutrition values, not from the
+   plan itself, which carries no fiber data. Whole foods are reliable; branded items
+   (High Fiber Tortilla, Fiber One, Kind Bar) vary a lot by brand — override any meal
+   from the Food tab and it sticks in S.mealFiber. */
+const FIBER_G={
+"0% Greek Yogurt|½ cup":0,"Almond Butter|1 TBSP":1.5,"Almond Butter|2 TBSP":3,"Almond Milk|1 cup":1,"Almond Milk|½ cup":.5,
+"Almond Slices|1 oz":3.5,"Almond Slivers|½ oz":1.8,"Almonds|1 oz":3.5,"Almonds|½ oz":1.8,
+"Apple|1 medium":4.4,"Apple|1 small":3.6,"Apple|½":2.2,"Asparagus|1 cup":2.8,"Asparagus|2 cups":5.6,
+"Avocado|¼":3.4,"Avocado|¼ cup":2.5,"Avocado|½ cup":5,"Avocado Slices|1 TBSP":.8,"Baked Salmon|6 oz":0,
+"Balsamic Vinaigrette|1 TBSP":0,"Banana|1":3.1,"Black Bean Burger|1":5,"Black Beans|½ cup":7.5,
+"Blueberries|1 cup":3.6,"Blueberries|½ cup":1.8,"Blueberries or Raspberries|½ cup":3,"Bolthouse Dressing|2 TBSP":0,
+"Broccoli|1 cup":2.4,"Brown Rice|1 cup":3.5,"Brown Rice|½ cup":1.8,"Butter|1 TBSP":0,"Butter|½ TBSP":0,
+"Butternut Squash|½ cup":3,"Carrots|3 oz":2.4,"Cauliflower|1 cup":2.1,"Celery|½ cup":.8,
+"Cherry Tomatoes, Cucumber, Onion|½ cup":1,"Chia Seeds|1 TBSP":4.1,"Chicken Breast|4 oz":0,"Chicken Breast|6 oz":0,
+"Chicken Thighs|5 oz":0,"Chickpeas|½ cup":6.2,"Coconut Oil|1 TBSP":0,"Coconut Oil|1 tsp":0,
+"Collagen Peptides|1 scoop":0,"Collagen Peptides|2 scoops":0,"Cooked Oats|½ cup":2,"Cottage Cheese|½ cup":0,
+"Cottage Cheese Low Fat|½ cup":0,"Cucumber + Tomato|1 cup":1.4,"Cucumber Slices|1 cup":.8,"Diced Tomatoes|1 cup":2.4,
+"Edamame|½ cup":4,"Egg|1 whole":0,"Egg White|1":0,"Egg Whites|2":0,"Egg Whites|4":0,
+"Ezekiel Bread|1 piece":3,"Ezekiel Bread|2 pieces":6,"Ezekiel Bread|2 slices":6,"Feta Cheese|1 oz":0,
+"Fiber One Cereal|⅔ cup":14,"Flaxseed Oil|1 tsp":0,"Frozen Banana|½":1.6,"Frozen Mango Chunks|½ cup":1.3,
+"Gluten-Free High-Fiber Tortilla|1":5,"Gluten-Free Tortilla|1":2,"Graham Crackers|2 squares":.8,
+"Grapes|1 cup":1.4,"Grapes|½ cup":.7,"Green Beans|1 cup":2.7,"Green Beans|½ cup":1.4,
+"Grilled Chicken Breast|4 oz":0,"Grilled Chicken Breast|5 oz":0,"Grilled Chicken Breast|6 oz":0,"Grilled Salmon|5 oz":0,
+"Hard Boiled Egg|1":0,"Heavy Whipping Cream|1 TBSP":0,"High Fiber English Muffin|1":8,"High Fiber Pita|1":6,
+"High Fiber Tortilla|1":8,"Hummus|2 TBSP":1.5,"Kidney Beans|½ cup":5.7,"Kind Bar|1":3.5,
+"Kodiak Cakes Pancake Mix|½ cup":3,"Lean Beef Patty|3 oz":0,"Lean Chicken Breast|6 oz":0,"Lean Ground Turkey|4 oz":0,
+"Lean Protein|6 oz":0,"Lean Sirloin Steak|4 oz":0,"Lean Turkey Breast|4 oz":0,"Low-Fat Cottage Cheese|½ cup":0,
+"Mahi Mahi|4 oz":0,"Mahi Mahi|6 oz":0,"Mashed Avocado|½ cup":5,"Mini Chocolate Chips|1 TBSP":.5,
+"Mixed Greens|2 cups":1.6,"Mixed Omelet Veggies|":1.5,"Mixed Peppers & Onions|1 cup":2.2,"Mixed Salad Veggies|":1.5,
+"Mixed Salad with Veggies|":2,"Mixed Veggies|1 cup":3,"Mixed Veggies|2 cups":6,"Mixed Veggies/Salad|1 cup":2.5,
+"Mushrooms|1 cup":.8,"Natural Peanut Butter|1 TBSP":1,"Oatmeal|½ cup":4,"Oatmeal|⅓ cup":2.7,"Oats|½ cup":4,
+"Olive Oil|1 TBSP":0,"Olive Oil|1 tsp":0,"Olive Oil|2 tsp":0,"Olive Oil|½ TBSP":0,"Olive Oil & Vinegar Dressing|1 TBSP":0,
+"Onions & Peppers|1 cup":2.2,"Onions & Peppers|½ cup":1.1,"Onions, Peppers, Mushrooms|":2,"Orange|1":3.1,
+"Oyster Crackers|½ cup":.7,"Peach|1 large":2.6,"Peach|½ cup":1.2,"Peanut Butter|1 TBSP":1,
+"Pineapple|½ cup":1.2,"Pineapple Chunks|½ cup":1.2,"Pinenuts|2 TBSP":.8,"Plain Greek Yogurt|6 oz":0,
+"Plain Nonfat Greek Yogurt|6 oz":0,"Pork Tenderloin|3 oz":0,"Pumpkin Puree|½ cup":3.6,"Quinoa|½ cup":2.6,"Quinoa|¾ cup":3.9,
+"Raspberries|½ cup":4,"Red Potatoes|4 oz":2.3,"Rice Cake|1":.4,"Rice Cakes|2":.8,"Roasted Brussels Sprouts|1 cup":4,
+"Roasted Red Potatoes|4 oz":2.3,"Roasted Zucchini & Mushrooms|½ cup":1,"Roasted Zucchini & Peppers|1 cup":2,
+"Romaine Lettuce Leaves|2":.5,"Russet Potato|6 oz":3.8,"Salmon|6 oz":0,"Salsa|2 TBSP":.5,"Salsa|4 TBSP":1,
+"Sandwich Veggies|1 cup":1.5,"Shredded Cheddar Cheese|1 oz":0,"Shredded Coconut|½ oz":2.3,
+"Spinach|1 cup":.7,"Spinach|2 cups":1.4,"Spinach|3 cups":2.1,"Spinach & Mixed Greens Salad|":1.5,
+"Spinach & Tomato|":1.2,"Spinach + Peppers|":1.5,"Steamed Asparagus|1 cup":2.8,"Steamed Broccoli|1 cup":2.4,
+"Steamed Edamame|1 cup":8,"Steamed Green Beans|2 cups":5.4,"Strawberries|1 cup":3,"Sugar Free Jelly|1 TBSP":0,
+"Sweet Potato|1 medium":3.8,"Sweet Potato|4 oz":3.4,"Sweet Potato|6 oz":5.1,"Sweet Potato|8 oz":6.8,"Sweet Potatoes|4 oz":3.4,
+"Tahini|2 TBSP":2.8,"Teriyaki Sauce|2 TBSP":0,"Turkey Bacon|2 slices":0,"Turkey Bacon|4 slices":0,
+"Turkey Breast|4 oz":0,"Turkey Breast Slices|4 oz":0,"UMP Protein Balls|10 balls":2,"UMP Protein Powder|1 scoop":0,
+"UMP Protein Powder|2 scoops":0,"Ultimate Muscle Protein|1 scoop":0,"Unsweetened Coconut Milk|1 cup":0,
+"Walnuts|1 oz":1.9,"White Fish|4 oz":0,"White Rice|½ cup":.3,"Whole Eggs|2":0,"Wild Rice|½ cup":1.5,"Zucchini|1 cup":1.2
+};
+function itemFiber(it){ const v=FIBER_G[(it.f||'')+'|'+(it.q||'')]; return v==null?0:v; }
+function mealFiberKey(m){ return (m._plan||'')+'|'+m.id; }
+function fiberGoal(){ return S.fiberGoal||30; }
+
 let S = load();
 function load(){
   const d=defaultState();
@@ -6544,7 +6603,7 @@ function load(){
 function save(){ const c=Object.assign({},S); delete c.plans; delete c.workouts; localStorage.setItem(LS_KEY, JSON.stringify(c)); scheduleCloudPush(); }
 
 /* ---- cloud sync (Render + Supabase) ---- */
-const CLOUD_KEYS=["checkins","foodLog","trainingLog","activities","water","waterGoal","vision","focus","profileName","groceryRun","currentPlanId","currentWorkoutId","strava","shareToken","notes","meditation","setLog","exerciseVideos","weightLog"];
+const CLOUD_KEYS=["checkins","foodLog","trainingLog","activities","water","waterGoal","fiberGoal","mealFiber","vision","focus","profileName","groceryRun","currentPlanId","currentWorkoutId","strava","shareToken","notes","meditation","setLog","exerciseVideos","weightLog"];
 function cloudPersonal(){ const o={}; CLOUD_KEYS.forEach(k=>o[k]=S[k]); return o; }
 function applyCloud(state){ if(!state)return; CLOUD_KEYS.forEach(k=>{ if(state[k]!==undefined) S[k]=state[k]; }); }
 let _pushT=null;
@@ -6606,7 +6665,6 @@ const h=(html)=>{const t=document.createElement('template');t.innerHTML=html.tri
 const esc=(s)=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const todayISO=()=>new Date().toLocaleDateString('en-CA');
 const slug=(n)=>n.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
-const round=(n,d=0)=>{const f=10**d;return Math.round(n*f)/f;};
 function toast(m){const t=$('#toast');t.textContent=m;t.classList.add('show');clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('show'),2200);}
 function enc(o){return btoa(unescape(encodeURIComponent(JSON.stringify(o))));}
 function dec(s){return JSON.parse(decodeURIComponent(escape(atob(s))));}
@@ -6614,18 +6672,25 @@ const curPlan=()=>S.plans.find(p=>p.id===S.currentPlanId)||S.plans[0];
 const curWorkout=()=>S.workouts.find(w=>w.id===S.currentWorkoutId)||S.workouts[0];
 function weekKey(d=new Date()){const t=new Date(d);t.setHours(0,0,0,0);t.setDate(t.getDate()+3-((t.getDay()+6)%7));const w1=new Date(t.getFullYear(),0,4);return t.getFullYear()+'-W'+String(1+Math.round(((t-w1)/864e5-3+((w1.getDay()+6)%7))/7)).padStart(2,'0');}
 
+
 /* ----- meal macros + auto grocery (computed from meal items) ----- */
 function mealRaw(m){
-  let cal=0,P=0,C=0,F=0;
-  (m.items||[]).forEach(it=>{ if(it.free||!it.cal) return; cal+=it.cal;
+  let cal=0,P=0,C=0,F=0,fib=0;
+  (m.items||[]).forEach(it=>{ if(it.free) return; fib+=itemFiber(it); if(!it.cal) return; cal+=it.cal;
     const t=it.m||'C'; const has=c=>t.indexOf(c)>=0;
     const n=(has('P')?1:0)+(has('C')?1:0)+(has('F')?1:0)||1, per=it.cal/n;
     if(has('P'))P+=per; if(has('C'))C+=per; if(has('F'))F+=per; });
-  return {cal, p:P/4, c:C/4, f:F/9};
+  return {cal, p:P/4, c:C/4, f:F/9, fib};
+}
+// User overrides win over the estimated table; they persist and sync.
+function mealFiberOf(m, fallback){
+  const o=S.mealFiber&&S.mealFiber[mealFiberKey(m)];
+  return o==null?fallback:o;
 }
 function mealMacros(m){
-  if(m._macros) return m._macros;
-  const r=mealRaw(m); return {cal:Math.round(r.cal), p:Math.round(r.p), c:Math.round(r.c), f:Math.round(r.f)};
+  const base=m._macros||(()=>{const r=mealRaw(m);return {cal:Math.round(r.cal),p:Math.round(r.p),c:Math.round(r.c),f:Math.round(r.f),fib:round(r.fib)};})();
+  const fib=mealFiberOf(m, base.fib||0);
+  return fib===base.fib?base:Object.assign({},base,{fib});
 }
 // Scale each plan's per-meal P/C/F so the day sums to the coach's stated target.
 function normalizePlans(plans){
@@ -6633,7 +6698,9 @@ function normalizePlans(plans){
     const raws=plan.meals.map(mealRaw);
     let rp=0,rc=0,rf=0; raws.forEach(r=>{rp+=r.p;rc+=r.c;rf+=r.f;});
     const t=plan.target||{}, sp=(t.p&&rp)?t.p/rp:1, sc=(t.c&&rc)?t.c/rc:1, sf=(t.f&&rf)?t.f/rf:1;
-    plan.meals.forEach((m,i)=>{ m._macros={cal:Math.round(raws[i].cal), p:Math.round(raws[i].p*sp), c:Math.round(raws[i].c*sc), f:Math.round(raws[i].f*sf)}; });
+    // Fiber is a measured absolute, not a share of the calorie split — never scaled.
+    plan.meals.forEach((m,i)=>{ m._plan=plan.id;
+      m._macros={cal:Math.round(raws[i].cal), p:Math.round(raws[i].p*sp), c:Math.round(raws[i].c*sc), f:Math.round(raws[i].f*sf), fib:round(raws[i].fib)}; });
   });
 }
 function categorize(food){
@@ -6687,8 +6754,8 @@ function renderHome(){
   const p=curPlan(), tg=p.target, today=todayISO(), tot=dayTotals(today);
   const calPct=tg.cal?Math.min(100,Math.round(tot.cal/tg.cal*100)):0;
   const todayLog=S.foodLog[today]||{};
-  const mealsEaten=Object.keys(todayLog.mealsEaten||{}).length;
-  const mealsPlanned=p.meals.filter(m=>!isSkipped(todayLog,m.id)).length;
+  const mealsEaten=Object.keys(todayLog.mealsEaten||{}).length+(todayLog.added||[]).length;
+  const mealsPlanned=p.meals.filter(m=>!isSkipped(todayLog,m.id)).length+(todayLog.added||[]).length;
   const wk=weekKey(), wlog=S.trainingLog[wk]||{};
   const tDays=curWorkout().days.filter(d=>!d.rest), tDone=tDays.filter(d=>wlog[d.id]).length;
   const run=S.groceryRun, pantrySet=new Set(S.pantry.map(x=>x.toLowerCase()));
@@ -6723,7 +6790,7 @@ function renderHome(){
     <div class="dbody"><div class="dlabel">Nutrition</div>
       <div class="dstat">${round(tot.cal)} <small>/ ${tg.cal} cal</small></div>
       <div class="dbar"><i style="width:${calPct}%;background:var(--cal)"></i></div>
-      <div class="dsub">${mealsEaten}/${mealsPlanned} meals · ${round(tot.p)}P / ${round(tot.c)}C / ${round(tot.f)}F</div>
+      <div class="dsub">${mealsEaten}/${mealsPlanned} meals · ${round(tot.p)}P / ${round(tot.c)}C / ${round(tot.f)}F · ${round(tot.fib)}g fiber</div>
     </div><div class="dchev">›</div></div>`;
 
   const medToday=!!(S.meditation&&S.meditation[today]);
@@ -6940,17 +7007,18 @@ function dayLog(d){
    an off-plan food was swapped in. These three read it without caring which. */
 function mealSwap(v){ return (v&&typeof v==='object'&&v.swap)?v.swap:null; }
 function mealTime(v){ return (v&&typeof v==='object')?(v.t||''):(v===true?'':(v||'')); }
-function slotMacros(m,v){ const sw=mealSwap(v); return sw?{cal:sw.cal||0,p:sw.p||0,c:sw.c||0,f:sw.f||0}:mealMacros(m); }
+function slotMacros(m,v){ const sw=mealSwap(v); return sw?{cal:sw.cal||0,p:sw.p||0,c:sw.c||0,f:sw.f||0,fib:sw.fib||0}:mealMacros(m); }
 function dayTotals(d){
   const p=curPlan(),lg=S.foodLog[d]||{},me=lg.mealsEaten||{};
-  const t={cal:0,p:0,c:0,f:0},seen={};
+  const t={cal:0,p:0,c:0,f:0,fib:0},seen={};
   p.meals.forEach(m=>{const v=me[m.id]; if(!v)return; seen[m.id]=1;
-    const mm=slotMacros(m,v);t.cal+=mm.cal;t.p+=mm.p;t.c+=mm.c;t.f+=mm.f;});
+    const mm=slotMacros(m,v);t.cal+=mm.cal;t.p+=mm.p;t.c+=mm.c;t.f+=mm.f;t.fib+=mm.fib||0;});
   // Slots not in the current plan: a bare check has no macros to attribute, but a swap
   // carries its own — that's real food, and it shouldn't vanish on a plan switch.
   Object.keys(me).forEach(k=>{ if(seen[k])return; const sw=mealSwap(me[k]);
-    if(sw){t.cal+=sw.cal||0;t.p+=sw.p||0;t.c+=sw.c||0;t.f+=sw.f||0;} });
-  (lg.extras||[]).forEach(e=>{t.cal+=e.cal||0;t.p+=e.p||0;t.c+=e.c||0;t.f+=e.f||0;});
+    if(sw){t.cal+=sw.cal||0;t.p+=sw.p||0;t.c+=sw.c||0;t.f+=sw.f||0;t.fib+=sw.fib||0;} });
+  (lg.added||[]).forEach(a=>{t.cal+=a.cal||0;t.p+=a.p||0;t.c+=a.c||0;t.f+=a.f||0;t.fib+=a.fib||0;});
+  (lg.extras||[]).forEach(e=>{t.cal+=e.cal||0;t.p+=e.p||0;t.c+=e.c||0;t.f+=e.f||0;t.fib+=e.fib||0;});
   return t;
 }
 function renderFood(){
@@ -6966,6 +7034,7 @@ function renderFood(){
       ${ringHTML('Protein',tot.p,tg.p,'var(--pro)','g')}
       ${ringHTML('Carbs',tot.c,tg.c,'var(--carb)','g')}
       ${ringHTML('Fat',tot.f,tg.f,'var(--fat)','g')}
+      ${ringHTML('Fiber',tot.fib,fiberGoal(),'var(--fiber)','g')}
     </div></div>`;
 
   // Eating window + fast (intermittent fasting)
@@ -6990,7 +7059,7 @@ function renderFood(){
     const title=sw?esc(m.name)+' <span style="font-weight:600;color:var(--blue)">→ '+esc(sw.name)+'</span>':esc(m.name);
     main+=`<div class="meal ${eaten}">
       <div class="check" onclick="toggleMeal('${m.id}')" style="${eaten?'background:var(--accent);border-color:var(--accent)':''}"><svg viewBox="0 0 24 24" style="${eaten?'opacity:1':''}"><path d="M5 13l4 4L19 7"/></svg></div>
-      <div class="mn" onclick="toggleMeal('${m.id}')"><b>${title}</b><div class="mm">${mm.cal} cal · ${mm.p}P / ${mm.c}C / ${mm.f}F${timeLabel?' · <span class="meal-time" onclick="event.stopPropagation();editMealTime(\''+m.id+'\')">🕐 '+timeLabel+'</span>':eaten?' · <span class="meal-time" onclick="event.stopPropagation();editMealTime(\''+m.id+'\')">set time</span>':''}</div></div>
+      <div class="mn" onclick="toggleMeal('${m.id}')"><b>${title}</b><div class="mm">${mm.cal} cal · ${mm.p}P / ${mm.c}C / ${mm.f}F · <span class="fib-chip${mealFiberOf(m,null)==null?' est':''}" onclick="event.stopPropagation();editMealFiber('${m.id}')" title="${mealFiberOf(m,null)==null?'Estimated — tap to correct':'Your value'}">${mm.fib||0}g fiber</span>${timeLabel?' · <span class="meal-time" onclick="event.stopPropagation();editMealTime(\''+m.id+'\')">🕐 '+timeLabel+'</span>':eaten?' · <span class="meal-time" onclick="event.stopPropagation();editMealTime(\''+m.id+'\')">set time</span>':''}</div></div>
       <button class="mealinfo" onclick="swapMealModal('${m.id}')" title="Swap in something else">⇄</button>
       <button class="mealinfo" onclick="toggleMealInfo('${m.id}')" title="Ingredients">${exp?'▲':'▼'}</button>
       <button class="mealinfo" onclick="skipMeal('${m.id}')" title="Skip this meal">×</button>
@@ -6998,7 +7067,14 @@ function renderFood(){
     ${sw?`<div class="swap-line">🔄 Instead of <b>${esc(m.name)}</b> · ${planMM.cal}→${mm.cal} cal <span class="sw-rm" onclick="clearMealSwap('${m.id}')">×</span></div>`:''}
     ${exp&&!sw&&m.items?`<div class="mealings">${m.items.map(it=>`<div class="ming"><span class="mq">${esc(it.q||'—')}</span><span>${esc(it.f)}</span></div>`).join('')}</div>`:''}`;
   });
-  if(!p.meals.length||skipped.length===p.meals.length) main+=`<div class="tiny" style="padding:6px 2px">Every meal skipped for this day.</div>`;
+  (lg.added||[]).forEach((a,i)=>{
+    main+=`<div class="meal eaten">
+      <div class="check" onclick="rmAddedSlot(${i})" title="Move back to off-plan" style="background:var(--accent);border-color:var(--accent)"><svg viewBox="0 0 24 24" style="opacity:1"><path d="M5 13l4 4L19 7"/></svg></div>
+      <div class="mn"><b>${esc(a.name)} <span class="added-tag">added</span></b><div class="mm">${a.cal} cal · ${a.p}P / ${a.c}C / ${a.f}F${a.fib?' · <span style="color:var(--fiber);font-weight:600">'+a.fib+'g fiber</span>':''} · <span class="meal-time" onclick="editAddedTime(${i})">🕐 ${fmtHM(a.t)||'set time'}</span></div></div>
+      <button class="mealinfo" onclick="rmAddedSlot(${i})" title="Move back to off-plan">×</button>
+    </div>`;
+  });
+  if((!p.meals.length||skipped.length===p.meals.length)&&!(lg.added||[]).length) main+=`<div class="tiny" style="padding:6px 2px">Every meal skipped for this day.</div>`;
   skipped.forEach(m=>{
     main+=`<div class="skip-line">⤫ Skipped <b>${esc(m.name)}</b> · ${mealMacros(m).cal} cal <span class="sk-rs" onclick="unskipMeal('${m.id}')">Restore</span></div>`;
   });
@@ -7008,7 +7084,7 @@ function renderFood(){
   main+=`<div class="card"><h2>Last 7 days</h2><div class="row" style="gap:6px;justify-content:space-between">`;
   for(let i=6;i>=0;i--){
     const d=new Date();d.setDate(d.getDate()-i);const iso=d.toLocaleDateString('en-CA');
-    const t=dayTotals(iso),fl=S.foodLog[iso],has=fl&&(Object.keys(fl.mealsEaten||{}).length||(fl.extras||[]).length);
+    const t=dayTotals(iso),fl=S.foodLog[iso],has=fl&&(Object.keys(fl.mealsEaten||{}).length||(fl.extras||[]).length||(fl.added||[]).length);
     const ratio=tg.cal?t.cal/tg.cal:0;
     let col=has?(ratio>=.9&&ratio<=1.1?'var(--good)':ratio<.9?'var(--carb)':'var(--warn)'):'var(--line)';
     main+=`<div style="flex:1;text-align:center;cursor:pointer" onclick="foodDate='${iso}';renderFood()">
@@ -7020,14 +7096,14 @@ function renderFood(){
   // side column — notes on top, then off-plan / extras
   let side=notesCard(foodDate)+`<div class="card"><h2>Off-plan / extras</h2>`;
   if((lg.extras||[]).length){
-    lg.extras.forEach((e,i)=>side+=`<div class="meal"><div class="mn" onclick="editExtra(${i})"><b>${esc(e.name)}</b><div class="mm">${e.cal||0} cal · ${e.p||0}P / ${e.c||0}C / ${e.f||0}F${e.time?' · <span class="meal-time">🕐 '+fmtHM(e.time)+'</span>':''}</div></div><button class="mealinfo" onclick="moveExtraToPlan(${i})" title="Move onto the plan">→</button><div class="xrm" style="font-size:20px;color:var(--ink3);cursor:pointer" onclick="rmFoodExtra(${i})">×</div></div>`);
+    lg.extras.forEach((e,i)=>side+=`<div class="meal"><div class="mn" onclick="editExtra(${i})"><b>${esc(e.name)}</b><div class="mm">${e.cal||0} cal · ${e.p||0}P / ${e.c||0}C / ${e.f||0}F${e.fib?' · <span style="color:var(--fiber);font-weight:600">'+e.fib+'g fiber</span>':''}${e.time?' · <span class="meal-time">🕐 '+fmtHM(e.time)+'</span>':''}</div></div><button class="mealinfo" onclick="moveExtraToPlan(${i})" title="Move onto the plan">→</button><div class="xrm" style="font-size:20px;color:var(--ink3);cursor:pointer" onclick="rmFoodExtra(${i})">×</div></div>`);
   } else side+=`<div class="tiny" style="padding:4px 2px 10px">Nothing logged off-plan.</div>`;
   side+=`<button class="btn" style="width:100%;margin-top:4px" onclick="addFoodModal()">＋ Add food</button>
     <div class="tiny" style="margin-top:8px;text-align:center">Recent · recipes · search · barcode · custom</div>`;
   const rec=recentFoods(4);
   if(rec.length){
     side+=`<label class="fld" style="margin-top:14px">Quick add</label>`;
-    rec.forEach((f,i)=>side+=`<div class="meal" style="cursor:pointer" onclick="quickAddRecent(${i})"><div class="mn"><b>${esc(f.name)}</b><div class="mm">${f.cal} cal · ${f.p}P / ${f.c}C / ${f.f}F</div></div><div style="font-size:18px;color:var(--accent-d);font-weight:800">＋</div></div>`);
+    rec.forEach((f,i)=>side+=`<div class="meal" style="cursor:pointer" onclick="quickAddRecent(${i})"><div class="mn"><b>${esc(f.name)}</b><div class="mm">${f.cal} cal · ${f.p}P / ${f.c}C / ${f.f}F${f.fib?' · '+f.fib+'g fiber':''}</div></div><div style="font-size:18px;color:var(--accent-d);font-weight:800">＋</div></div>`);
   }
   side+=`</div>`;
 
@@ -7058,7 +7134,7 @@ function toggleMeal(id){
 function applyMealSwap(slotId, food, atTime){
   const lg=dayLog(foodDate), me=lg.mealsEaten, prev=me[slotId];
   me[slotId]={ t: atTime||mealTime(prev)||(foodDate===todayISO()?nowHM():'12:00'),
-    swap:{name:food.name, cal:Math.round(food.cal||0), p:round(food.p||0), c:round(food.c||0), f:round(food.f||0), src:food.src||null} };
+    swap:{name:food.name, cal:Math.round(food.cal||0), p:round(food.p||0), c:round(food.c||0), f:round(food.f||0), fib:round(food.fib||0), src:food.src||null} };
   // Filling a slot un-skips it — otherwise the row stays hidden while its
   // macros count, which reads as calories appearing from nowhere.
   if(lg.skipped&&lg.skipped[slotId]){ delete lg.skipped[slotId]; if(!Object.keys(lg.skipped).length)delete lg.skipped; }
@@ -7086,6 +7162,53 @@ function unskipMeal(id){
   const lg=dayLog(foodDate); if(!lg.skipped)return;
   delete lg.skipped[id]; if(!Object.keys(lg.skipped).length)delete lg.skipped;
   save(); renderFood();
+}
+/* Extra meal slots for a day, for when you eat more than the plan has room for.
+   Same per-day storage as skips — the plan itself is never touched. */
+function addSlotFromFood(food, when){
+  const lg=dayLog(foodDate); if(!lg.added)lg.added=[];
+  lg.added.push({name:food.name, cal:Math.round(food.cal||0), p:round(food.p||0), c:round(food.c||0),
+    f:round(food.f||0), fib:round(food.fib||0), src:food.src||null,
+    t:when||(foodDate===todayISO()?nowHM():'12:00')});
+  save(); closeModal(); renderFood(); toast('Added '+food.name+' to the plan');
+}
+function rmAddedSlot(i){
+  const lg=dayLog(foodDate), a=lg.added&&lg.added[i]; if(!a)return;
+  lg.added.splice(i,1); if(!lg.added.length)delete lg.added;
+  lg.extras.push({name:a.name,cal:a.cal,p:a.p,c:a.c,f:a.f,fib:a.fib,src:a.src,time:a.t});
+  save(); renderFood(); toast('Moved back to off-plan');
+}
+function editAddedTime(i){
+  const lg=dayLog(foodDate), a=lg.added&&lg.added[i]; if(!a)return;
+  openModal(`<h3>When did you eat this?</h3>
+    <label class="fld">Time</label><input class="inp" id="mtTime" type="time" value="${a.t||nowHM()}">
+    <div class="row" style="gap:8px;margin-top:12px"><button class="btn" style="flex:1" onclick="saveAddedTime(${i})">Save</button>
+    <button class="btn sec" onclick="$('#mtTime').value=nowHM()">Now</button></div>`);
+}
+function saveAddedTime(i){ const t=$('#mtTime').value; if(!t)return;
+  const lg=dayLog(foodDate); if(lg.added&&lg.added[i])lg.added[i].t=t;
+  save(); closeModal(); renderFood(); }
+function editMealFiber(id){
+  const m=curPlan().meals.find(x=>x.id===id); if(!m)return;
+  const est=(m._macros&&m._macros.fib)||0, cur=mealFiberOf(m,est), isEst=mealFiberOf(m,null)==null;
+  openModal(`<h3>Fiber in ${esc(m.name)}</h3>
+    <p class="muted" style="font-size:13px;margin:4px 0 10px">${isEst
+      ?'This is an <b>estimate</b> from standard nutrition values — your plan does not include fiber. Correct it and it sticks for this meal everywhere.'
+      :'You set this. Estimated value was <b>'+est+'g</b>.'}</p>
+    <label class="fld">Fiber g</label><input class="inp" id="mfG" type="number" inputmode="decimal" step="0.5" value="${cur}">
+    <div class="row" style="gap:8px;margin-top:12px"><button class="btn" style="flex:1" onclick="saveMealFiber('${id}')">Save</button>
+    ${isEst?'':`<button class="btn sec" onclick="resetMealFiber('${id}')">Use estimate</button>`}</div>`);
+}
+function saveMealFiber(id){
+  const m=curPlan().meals.find(x=>x.id===id); if(!m)return;
+  const v=$('#mfG').value; if(v==='')return;
+  S.mealFiber=S.mealFiber||{}; S.mealFiber[mealFiberKey(m)]=Math.max(0,+v||0);
+  save(); closeModal(); renderFood(); toast('Fiber saved');
+}
+function resetMealFiber(id){
+  const m=curPlan().meals.find(x=>x.id===id); if(!m||!S.mealFiber)return;
+  delete S.mealFiber[mealFiberKey(m)];
+  save(); closeModal(); renderFood(); toast('Back to the estimate');
 }
 function editMealTime(id){
   const lg=dayLog(foodDate); const cur=mealTime(lg.mealsEaten[id])||nowHM();
@@ -7122,6 +7245,7 @@ function eatingWindow(date){
   const lg=S.foodLog[date]||{mealsEaten:{},extras:[]};
   const ts=[];
   Object.values(lg.mealsEaten||{}).forEach(v=>{ const hm=mealTime(v); if(/^\d\d:\d\d$/.test(hm))ts.push(hm); });
+  (lg.added||[]).forEach(a=>{ if(a.t&&/^\d\d:\d\d$/.test(a.t))ts.push(a.t); });
   (lg.extras||[]).forEach(e=>{ if(e.time&&/^\d\d:\d\d$/.test(e.time))ts.push(e.time); });
   if(!ts.length) return null;
   ts.sort(); const first=ts[0], last=ts[ts.length-1];
@@ -7149,6 +7273,7 @@ function moveExtraToPlan(i){
   window._mvExtra={i, sig:exSig(e), date:foodDate};
   openModal(`<h3>Move onto the plan</h3>
     <p class="muted" style="font-size:13px;margin:4px 0 10px">Put <b>${esc(e.name)}</b> on your plan for <b>${fmtDate(foodDate)}</b> in place of a meal. It leaves the off-plan list.</p>
+    <div class="searchres" onclick="doAddSlot()" style="border-bottom:2px solid var(--line)"><div class="srn"><b>＋ Add as a new meal</b><br><span>Keep all ${p.meals.length} plan meals and add this as an extra slot for the day</span></div><div style="color:var(--accent-d);font-weight:800">＋</div></div>
     ${slots.map(s=>{
       const tag=s.skipped?'<span style="color:var(--accent-d);font-weight:700">skipped — free</span>'
         :s.taken?'<span style="color:var(--ink3)">already logged — will be replaced</span>'
@@ -7156,14 +7281,25 @@ function moveExtraToPlan(i){
       return `<div class="searchres" onclick="doMoveExtra('${s.m.id}')"><div class="srn"><b>${esc(s.m.name)}</b><br><span>${tag}</span></div><div style="color:var(--accent-d);font-weight:800">→</div></div>`;
     }).join('')}`);
 }
-function doMoveExtra(slotId){
-  const g=window._mvExtra; if(!g)return;
+// Pull the pending extra out under the fingerprint guard, shared by both move paths.
+function takePendingExtra(){
+  const g=window._mvExtra; if(!g)return null;
   const lg=dayLog(g.date), e=lg.extras[g.i];
-  if(!e||exSig(e)!==g.sig){ closeModal(); renderFood(); toast('That entry changed — reopen it'); return; }
-  const food={name:e.name, cal:e.cal, p:e.p, c:e.c, f:e.f, src:e.src}, when=e.time;
+  if(!e||exSig(e)!==g.sig){ closeModal(); renderFood(); toast('That entry changed — reopen it'); return null; }
+  const food={name:e.name, cal:e.cal, p:e.p, c:e.c, f:e.f, fib:e.fib, src:e.src}, when=e.time;
   lg.extras.splice(g.i,1);
-  const keep=foodDate; foodDate=g.date;      // applyMealSwap writes to foodDate
-  applyMealSwap(slotId, food, when);         // keep the time it was actually eaten
+  return {food, when, date:g.date};
+}
+function doMoveExtra(slotId){
+  const t=takePendingExtra(); if(!t)return;
+  const keep=foodDate; foodDate=t.date;        // applyMealSwap writes to foodDate
+  applyMealSwap(slotId, t.food, t.when);       // keep the time it was actually eaten
+  foodDate=keep; window._mvExtra=null;
+}
+function doAddSlot(){
+  const t=takePendingExtra(); if(!t)return;
+  const keep=foodDate; foodDate=t.date;
+  addSlotFromFood(t.food, t.when);
   foodDate=keep; window._mvExtra=null;
 }
 function macroFields(pre,v){ v=v||{};
@@ -7171,10 +7307,11 @@ function macroFields(pre,v){ v=v||{};
     <div class="grid2" style="margin-top:8px"><div><label class="fld" style="margin:0">Calories</label><input class="inp" id="${pre}Cal" type="number" inputmode="numeric" value="${v.cal!=null?v.cal:''}"></div>
     <div><label class="fld" style="margin:0">Protein g</label><input class="inp" id="${pre}P" type="number" inputmode="numeric" value="${v.p!=null?v.p:''}"></div>
     <div><label class="fld" style="margin:0">Carbs g</label><input class="inp" id="${pre}C" type="number" inputmode="numeric" value="${v.c!=null?v.c:''}"></div>
-    <div><label class="fld" style="margin:0">Fat g</label><input class="inp" id="${pre}F" type="number" inputmode="numeric" value="${v.f!=null?v.f:''}"></div></div>`;
+    <div><label class="fld" style="margin:0">Fat g</label><input class="inp" id="${pre}F" type="number" inputmode="numeric" value="${v.f!=null?v.f:''}"></div>
+    <div><label class="fld" style="margin:0">Fiber g</label><input class="inp" id="${pre}Fib" type="number" inputmode="numeric" value="${v.fib!=null?v.fib:''}"></div></div>`;
 }
 function readMacroFields(pre){ const n=$('#'+pre+'N').value.trim(); if(!n)return null;
-  return {name:n, cal:+$('#'+pre+'Cal').value||0, p:+$('#'+pre+'P').value||0, c:+$('#'+pre+'C').value||0, f:+$('#'+pre+'F').value||0}; }
+  return {name:n, cal:+$('#'+pre+'Cal').value||0, p:+$('#'+pre+'P').value||0, c:+$('#'+pre+'C').value||0, f:+$('#'+pre+'F').value||0, fib:+$('#'+pre+'Fib').value||0}; }
 /* Open Food Facts returns the same nutriment keys from both the search and the
    single-product endpoint, so one parser serves search, barcode, and scaling. */
 const OFF_FIELDS='product_name,brands,serving_size,nutriments';
@@ -7185,12 +7322,12 @@ function parseOFF(p){
   return { name:p.product_name, brand:(p.brands||'').split(',')[0].trim(),
     basis: ps?(p.serving_size||'serving'):'per 100g',
     cal:Math.round(ps?(n['energy-kcal_serving']||0):(n['energy-kcal_100g']||0)),
-    p:g('proteins'), c:g('carbohydrates'), f:g('fat') };
+    p:g('proteins'), c:g('carbohydrates'), f:g('fat'), fib:g('fiber') };
 }
 function scaleFood(f,mult){
   const m=+mult||1; if(m===1)return Object.assign({},f);
   return Object.assign({},f,{name:f.name+' ×'+m, cal:Math.round((f.cal||0)*m),
-    p:round((f.p||0)*m), c:round((f.c||0)*m), f:round((f.f||0)*m)});
+    p:round((f.p||0)*m), c:round((f.c||0)*m), f:round((f.f||0)*m), fib:round((f.fib||0)*m)});
 }
 async function offSearch(q){
   const u='https://world.openfoodfacts.org/cgi/search.pl?search_terms='+encodeURIComponent(q)+'&search_simple=1&action=process&json=1&page_size=10&fields='+OFF_FIELDS;
@@ -7237,7 +7374,7 @@ function fpRows(list,empty){
   if(!list.length)return `<div class="empty">${empty}</div>`;
   return list.map((f,i)=>{
     const sub=[f.brand,f.basis,f.note].filter(Boolean).join(' · ');
-    return `<div class="searchres" onclick="fpPick(${i})"><div class="srn"><b>${esc(f.name)}</b><br><span>${sub?esc(sub)+' — ':''}${f.cal} cal · ${f.p}P/${f.c}C/${f.f}F</span></div><div style="color:var(--accent-d);font-weight:800">${_fpMode==='swap'?'⇄':'＋'}</div></div>`;
+    return `<div class="searchres" onclick="fpPick(${i})"><div class="srn"><b>${esc(f.name)}</b><br><span>${sub?esc(sub)+' — ':''}${f.cal} cal · ${f.p}P/${f.c}C/${f.f}F${f.fib?' · '+f.fib+'g fiber':''}</span></div><div style="color:var(--accent-d);font-weight:800">${_fpMode==='swap'?'⇄':'＋'}</div></div>`;
   }).join('');
 }
 function fpBody(){
@@ -7254,7 +7391,7 @@ function fpRecipeRows(q){
   S.plans.forEach(pl=>(pl.meals||[]).forEach(m=>{
     if(q&&!m.name.toLowerCase().includes(q)&&!pl.name.toLowerCase().includes(q))return;
     const mm=mealMacros(m);
-    out.push({name:m.name, brand:pl.name, cal:mm.cal, p:mm.p, c:mm.c, f:mm.f, src:{k:'plan',planId:pl.id,mealId:m.id}});
+    out.push({name:m.name, brand:pl.name, cal:mm.cal, p:mm.p, c:mm.c, f:mm.f, fib:mm.fib, src:{k:'plan',planId:pl.id,mealId:m.id}});
   }));
   return fpRows(out.slice(0,40),'No matching recipes.');
 }
@@ -7280,7 +7417,7 @@ function fpCustom(){ const f=readMacroFields('cf'); if(!f){toast('Give it a name
 function commitFood(f){
   if(_fpMode==='swap'&&_fpSlot) return applyMealSwap(_fpSlot,f);
   dayLog(foodDate).extras.push({name:f.name, cal:Math.round(f.cal||0), p:round(f.p||0), c:round(f.c||0), f:round(f.f||0),
-    src:f.src||null, time:foodDate===todayISO()?nowHM():'12:00'});
+    fib:round(f.fib||0), src:f.src||null, time:foodDate===todayISO()?nowHM():'12:00'});
   save(); closeModal(); renderFood(); toast('Added '+f.name);
 }
 /* Recents are derived from history, not stored — so they sync for free and never
@@ -7293,7 +7430,7 @@ function recentFoods(limit){
     const lg=S.foodLog[d]||{}, age=Math.max(0,(now-new Date(d+'T12:00').getTime())/864e5);
     const bump=f=>{ if(!f||!f.name)return; const k=f.name.toLowerCase().trim();
       const e=map.get(k)||{n:0,age:1e9};
-      Object.assign(e,{name:f.name,cal:f.cal||0,p:f.p||0,c:f.c||0,f:f.f||0,src:f.src||e.src});
+      Object.assign(e,{name:f.name,cal:f.cal||0,p:f.p||0,c:f.c||0,f:f.f||0,fib:f.fib||0,src:f.src||e.src});
       e.n++; e.age=Math.min(e.age,age); map.set(k,e); };
     (lg.extras||[]).forEach(bump);
     Object.values(lg.mealsEaten||{}).forEach(v=>{ const sw=mealSwap(v); if(sw)bump(sw); });
@@ -7381,7 +7518,7 @@ function doRecipeSwap(planId, mealId){
   const slot=$('#swapSel').value; const pl=S.plans.find(p=>p.id===planId); const m=pl&&(pl.meals||[]).find(x=>x.id===mealId);
   if(!m){closeModal();return;}
   const mm=mealMacros(m);
-  applyMealSwap(slot,{name:m.name, cal:mm.cal, p:mm.p, c:mm.c, f:mm.f, src:{k:'plan',planId:planId,mealId:mealId}});
+  applyMealSwap(slot,{name:m.name, cal:mm.cal, p:mm.p, c:mm.c, f:mm.f, fib:mm.fib, src:{k:'plan',planId:planId,mealId:mealId}});
 }
 
 /* ============================ TRAIN ============================ */
@@ -7732,6 +7869,9 @@ function renderData(){
     <label class="fld">Daily water goal (oz)</label>
     <div class="row" style="gap:8px"><input class="inp" id="pfWater" type="number" inputmode="numeric" value="${S.waterGoal||126}">
     <button class="btn" onclick="S.waterGoal=Math.max(1,+$('#pfWater').value||126);save();toast('Saved')">Save</button></div>
+    <label class="fld" style="margin-top:12px">Daily fiber goal (g)</label>
+    <div class="row" style="gap:8px"><input class="inp" id="pfFiber" type="number" inputmode="numeric" value="${fiberGoal()}">
+    <button class="btn" onclick="S.fiberGoal=Math.max(1,+$('#pfFiber').value||30);save();toast('Saved')">Save</button></div>
   </div>`;
 
   const synced=S.cloud&&S.cloud.url&&S.cloud.token;
@@ -7793,6 +7933,8 @@ function importFile(e){
     if(j.water)S.water=Object.assign(S.water||{},j.water);
     if(j.profileName)S.profileName=j.profileName;
     if(j.waterGoal)S.waterGoal=j.waterGoal;
+    if(j.fiberGoal)S.fiberGoal=j.fiberGoal;
+    if(j.mealFiber)S.mealFiber=j.mealFiber;
     if(j.cloud)S.cloud=Object.assign(S.cloud||{},j.cloud);
     if(j.notes)S.notes=Object.assign(S.notes||{},j.notes);
     if(j.meditation)S.meditation=Object.assign(S.meditation||{},j.meditation);
