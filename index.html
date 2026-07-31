@@ -7020,7 +7020,7 @@ function renderFood(){
   // side column — notes on top, then off-plan / extras
   let side=notesCard(foodDate)+`<div class="card"><h2>Off-plan / extras</h2>`;
   if((lg.extras||[]).length){
-    lg.extras.forEach((e,i)=>side+=`<div class="meal"><div class="mn" onclick="editExtra(${i})"><b>${esc(e.name)}</b><div class="mm">${e.cal||0} cal · ${e.p||0}P / ${e.c||0}C / ${e.f||0}F${e.time?' · <span class="meal-time">🕐 '+fmtHM(e.time)+'</span>':''}</div></div><div class="xrm" style="font-size:20px;color:var(--ink3);cursor:pointer" onclick="rmFoodExtra(${i})">×</div></div>`);
+    lg.extras.forEach((e,i)=>side+=`<div class="meal"><div class="mn" onclick="editExtra(${i})"><b>${esc(e.name)}</b><div class="mm">${e.cal||0} cal · ${e.p||0}P / ${e.c||0}C / ${e.f||0}F${e.time?' · <span class="meal-time">🕐 '+fmtHM(e.time)+'</span>':''}</div></div><button class="mealinfo" onclick="moveExtraToPlan(${i})" title="Move onto the plan">→</button><div class="xrm" style="font-size:20px;color:var(--ink3);cursor:pointer" onclick="rmFoodExtra(${i})">×</div></div>`);
   } else side+=`<div class="tiny" style="padding:4px 2px 10px">Nothing logged off-plan.</div>`;
   side+=`<button class="btn" style="width:100%;margin-top:4px" onclick="addFoodModal()">＋ Add food</button>
     <div class="tiny" style="margin-top:8px;text-align:center">Recent · recipes · search · barcode · custom</div>`;
@@ -7055,10 +7055,13 @@ function toggleMeal(id){
   else lg.mealsEaten[id]=foodDate===todayISO()?nowHM():'12:00';
   save();renderFood();
 }
-function applyMealSwap(slotId, food){
-  const me=dayLog(foodDate).mealsEaten, prev=me[slotId];
-  me[slotId]={ t: mealTime(prev)||(foodDate===todayISO()?nowHM():'12:00'),
+function applyMealSwap(slotId, food, atTime){
+  const lg=dayLog(foodDate), me=lg.mealsEaten, prev=me[slotId];
+  me[slotId]={ t: atTime||mealTime(prev)||(foodDate===todayISO()?nowHM():'12:00'),
     swap:{name:food.name, cal:Math.round(food.cal||0), p:round(food.p||0), c:round(food.c||0), f:round(food.f||0), src:food.src||null} };
+  // Filling a slot un-skips it — otherwise the row stays hidden while its
+  // macros count, which reads as calories appearing from nowhere.
+  if(lg.skipped&&lg.skipped[slotId]){ delete lg.skipped[slotId]; if(!Object.keys(lg.skipped).length)delete lg.skipped; }
   save(); closeModal(); renderFood(); toast('Swapped in '+food.name);
 }
 // Undo the substitution but keep the slot eaten at the same time. Tapping the
@@ -7135,6 +7138,34 @@ function fastSinceLast(date){
 function fmtDur(mins){ if(mins==null)return''; const h=Math.floor(mins/60),m=mins%60; return h+'h'+(m?' '+m+'m':''); }
 function rmFoodExtra(i){ const lg=dayLog(foodDate); if(!lg.extras[i])return;
   lg.extras.splice(i,1); save(); renderFood(); }
+/* Promote a logged extra into a plan slot for the day, so what you actually ate
+   sits on the plan instead of in a side list. Skipped slots lead — x-ing a meal
+   then logging its replacement is the whole reason this exists. */
+function moveExtraToPlan(i){
+  const lg=dayLog(foodDate), e=lg.extras[i]; if(!e)return;
+  const p=curPlan();
+  const slots=p.meals.map(m=>({m, skipped:isSkipped(lg,m.id), taken:!!lg.mealsEaten[m.id]}))
+    .sort((a,b)=>(b.skipped-a.skipped)||(a.taken-b.taken));
+  window._mvExtra={i, sig:exSig(e), date:foodDate};
+  openModal(`<h3>Move onto the plan</h3>
+    <p class="muted" style="font-size:13px;margin:4px 0 10px">Put <b>${esc(e.name)}</b> on your plan for <b>${fmtDate(foodDate)}</b> in place of a meal. It leaves the off-plan list.</p>
+    ${slots.map(s=>{
+      const tag=s.skipped?'<span style="color:var(--accent-d);font-weight:700">skipped — free</span>'
+        :s.taken?'<span style="color:var(--ink3)">already logged — will be replaced</span>'
+        :'<span style="color:var(--ink3)">'+mealMacros(s.m).cal+' cal</span>';
+      return `<div class="searchres" onclick="doMoveExtra('${s.m.id}')"><div class="srn"><b>${esc(s.m.name)}</b><br><span>${tag}</span></div><div style="color:var(--accent-d);font-weight:800">→</div></div>`;
+    }).join('')}`);
+}
+function doMoveExtra(slotId){
+  const g=window._mvExtra; if(!g)return;
+  const lg=dayLog(g.date), e=lg.extras[g.i];
+  if(!e||exSig(e)!==g.sig){ closeModal(); renderFood(); toast('That entry changed — reopen it'); return; }
+  const food={name:e.name, cal:e.cal, p:e.p, c:e.c, f:e.f, src:e.src}, when=e.time;
+  lg.extras.splice(g.i,1);
+  const keep=foodDate; foodDate=g.date;      // applyMealSwap writes to foodDate
+  applyMealSwap(slotId, food, when);         // keep the time it was actually eaten
+  foodDate=keep; window._mvExtra=null;
+}
 function macroFields(pre,v){ v=v||{};
   return `<label class="fld">Name</label><input class="inp" id="${pre}N" placeholder="e.g. Cappuccino" value="${esc(v.name||'')}">
     <div class="grid2" style="margin-top:8px"><div><label class="fld" style="margin:0">Calories</label><input class="inp" id="${pre}Cal" type="number" inputmode="numeric" value="${v.cal!=null?v.cal:''}"></div>
