@@ -6671,6 +6671,13 @@ function dec(s){return JSON.parse(decodeURIComponent(escape(atob(s))));}
 const curPlan=()=>S.plans.find(p=>p.id===S.currentPlanId)||S.plans[0];
 const curWorkout=()=>S.workouts.find(w=>w.id===S.currentWorkoutId)||S.workouts[0];
 function weekKey(d=new Date()){const t=new Date(d);t.setHours(0,0,0,0);t.setDate(t.getDate()+3-((t.getDay()+6)%7));const w1=new Date(t.getFullYear(),0,4);return t.getFullYear()+'-W'+String(1+Math.round(((t-w1)/864e5-3+((w1.getDay()+6)%7))/7)).padStart(2,'0');}
+/* Day ids are only d1..d6 — unique within a program, not across them. Without the
+   program prefix, ticking Day 1 on one program marked Day 1 done on every program
+   for that week. Pre-namespace keys are deliberately NOT read back here: they carry
+   no program, so honouring them is what caused the cross-program checkmarks. They
+   stay in storage and still count toward weekly totals and the activity dots. */
+function dayKey(id, wid){ return (wid||S.currentWorkoutId||'')+'|'+id; }
+function isLegacyDayKey(k){ return k.indexOf('|')<0; }
 
 
 /* ----- meal macros + auto grocery (computed from meal items) ----- */
@@ -6757,7 +6764,7 @@ function renderHome(){
   const mealsEaten=Object.keys(todayLog.mealsEaten||{}).length+(todayLog.added||[]).length;
   const mealsPlanned=p.meals.filter(m=>!isSkipped(todayLog,m.id)).length+(todayLog.added||[]).length;
   const wk=weekKey(), wlog=S.trainingLog[wk]||{};
-  const tDays=curWorkout().days.filter(d=>!d.rest), tDone=tDays.filter(d=>wlog[d.id]).length;
+  const tDays=curWorkout().days.filter(d=>!d.rest), tDone=tDays.filter(d=>wlog[dayKey(d.id)]).length;
   const run=S.groceryRun, pantrySet=new Set(S.pantry.map(x=>x.toLowerCase()));
   const shop=[...planGroceries(p).map((g,i)=>({...g,key:'p'+i})),...(run.extras||[]).map((e,i)=>({...e,key:'e'+i}))].filter(g=>!(g.pantry||pantrySet.has(g.item.toLowerCase())));
   const left=shop.filter(g=>!run.checked[g.key]).length;
@@ -7526,7 +7533,7 @@ function renderTrain(){
   const w=curWorkout(),wk=weekKey();S.trainingLog[wk]=S.trainingLog[wk]||{};
   const log=S.trainingLog[wk];
   const trainDays=w.days.filter(d=>!d.rest);
-  const done=trainDays.filter(d=>log[d.id]).length;
+  const done=trainDays.filter(d=>log[dayKey(d.id)]).length;
   const isSwap=(v)=>v&&typeof v==='object'&&v.swap;
   let main=`<div class="card"><div class="row"><div style="flex:1">
       <label class="fld" style="margin-top:0">Program</label>
@@ -7552,7 +7559,7 @@ function renderTrain(){
 
   w.days.forEach(d=>{
     if(d.rest){main+=`<div class="card" style="padding:0"><div class="rest">🧘 ${esc(d.label)}</div></div>`;return;}
-    const v=log[d.id], dn=v?'done':'', sw=isSwap(v);
+    const v=log[dayKey(d.id)], dn=v?'done':'', sw=isSwap(v);
     const checkStyle = sw ? 'background:var(--blue);border-color:var(--blue)' : (dn?'background:var(--accent);border-color:var(--accent)':'');
     main+=`<div class="card"><div class="day"><div class="dh">
       <div class="check ${dn}" onclick="toggleDay('${d.id}')" style="${checkStyle}"><svg viewBox="0 0 24 24" style="${dn?'opacity:1':''}"><path d="${sw?'M7 12h10':'M5 13l4 4L19 7'}"/></svg></div>
@@ -7691,11 +7698,11 @@ function toggleSet(dayId, exIdx, setIdx){
   save(); renderTrain();
 }
 function toggleDay(id){const wk=weekKey();S.trainingLog[wk]=S.trainingLog[wk]||{};
-  const cur=S.trainingLog[wk][id];
+  const k=dayKey(id), cur=S.trainingLog[wk][k];
   // if it's a swap, tapping the check clears it; else it's a plain on/off
-  if(cur) delete S.trainingLog[wk][id]; else S.trainingLog[wk][id]=true;
+  if(cur) delete S.trainingLog[wk][k]; else S.trainingLog[wk][k]=true;
   save();renderTrain();}
-function clearSwap(id){const wk=weekKey();if(S.trainingLog[wk])delete S.trainingLog[wk][id];save();renderTrain();}
+function clearSwap(id){const wk=weekKey();if(S.trainingLog[wk])delete S.trainingLog[wk][dayKey(id)];save();renderTrain();}
 function swapDayModal(dayId, dayLabel){
   // pull last-7-day Strava activities for the suggestion list
   const wkAgo=Date.now()-7*864e5;
@@ -7721,13 +7728,13 @@ function swapDayModal(dayId, dayLabel){
 function pickSwap(dayId, idx){
   const a=window._swapActs[idx]; if(!a)return;
   const wk=weekKey();S.trainingLog[wk]=S.trainingLog[wk]||{};
-  S.trainingLog[wk][dayId]={swap:{name:a.name||a.type, type:a.type, durationMin:a.durationMin, date:a.date}};
+  S.trainingLog[wk][dayKey(dayId)]={swap:{name:a.name||a.type, type:a.type, durationMin:a.durationMin, date:a.date}};
   save();closeModal();renderTrain();toast('Swapped with '+(a.name||a.type));
 }
 function saveCustomSwap(dayId){
   const name=$('#swapName').value.trim(); if(!name){toast('Enter a name');return;}
   const wk=weekKey();S.trainingLog[wk]=S.trainingLog[wk]||{};
-  S.trainingLog[wk][dayId]={swap:{name, type:$('#swapType').value.trim()||null, durationMin:+$('#swapDur').value||null, date:new Date().toISOString()}};
+  S.trainingLog[wk][dayKey(dayId)]={swap:{name, type:$('#swapType').value.trim()||null, durationMin:+$('#swapDur').value||null, date:new Date().toISOString()}};
   save();closeModal();renderTrain();toast('Swap saved');
 }
 function actEmoji(t){t=(t||'').toLowerCase();if(t.includes('run'))return'🏃';if(t.includes('ride')||t.includes('cycl')||t.includes('bike'))return'🚴';if(t.includes('swim'))return'🏊';if(t.includes('walk')||t.includes('hike'))return'🚶';if(t.includes('weight')||t.includes('strength')||t.includes('workout'))return'🏋️';if(t.includes('yoga'))return'🧘';return'💪';}
